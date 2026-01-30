@@ -1,30 +1,35 @@
 import React, { useState } from 'react';
 import { UploadCloud, RefreshCw, Download, Share2, Edit, X, ImageIcon } from 'lucide-react';
 import { Toast } from '../ui/Toast';
+import { generateImageAction } from '../../lib/ai-actions';
 
 const StudioProduct: React.FC = () => {
   const [image, setImage] = useState<string | null>(null);
+  const [prompt, setPrompt] = useState('');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<string | null>(null);
   const [showToast, setShowToast] = useState(false);
 
   const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      // Create a fake local URL for preview
       const url = URL.createObjectURL(e.target.files[0]);
       setImage(url);
     }
   };
 
-  const handleGenerate = () => {
+  const handleGenerate = async () => {
+    if (!prompt && !image) return;
     setLoading(true);
-    // Simulate API call
-    setTimeout(() => {
-      setLoading(false);
-      // Mock result (using a placeholder image for now)
-      setResult("https://images.unsplash.com/photo-1549488352-84b675340179?q=80&w=1000&auto=format&fit=crop");
-      setShowToast(true);
-    }, 3000);
+    
+    try {
+        const resultUrl = await generateImageAction(prompt || "Product photography");
+        setResult(resultUrl);
+        setShowToast(true);
+    } catch (e) {
+        console.error(e);
+    } finally {
+        setLoading(false);
+    }
   };
 
   return (
@@ -35,7 +40,7 @@ const StudioProduct: React.FC = () => {
       <div className="w-full lg:w-1/3 flex flex-col gap-6 overflow-y-auto">
         <div>
           <h1 className="text-3xl font-bold text-white mb-2">Studio Product AI</h1>
-          <p className="text-slate-400 text-sm">Crie fotos de estúdio ultra-realistas (4K). Use uma foto do seu produto como base ou crie do zero.</p>
+          <p className="text-slate-400 text-sm">Crie fotos de estúdio ultra-realistas (4K). Tecnologia Leonardo.Ai Phoenix.</p>
         </div>
 
         {/* Upload Area */}
@@ -64,6 +69,8 @@ const StudioProduct: React.FC = () => {
         <div className="flex-1">
           <label className="block text-sm font-medium text-slate-300 mb-2">Descrição do Cenário</label>
           <textarea 
+            value={prompt}
+            onChange={(e) => setPrompt(e.target.value)}
             className="w-full h-32 bg-[#0A0510] border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-primary transition-colors resize-none"
             placeholder="Ex: Uma garrafa térmica preta moderna em cima de uma mesa de madeira rústica com luz solar da manhã..."
           ></textarea>
@@ -76,7 +83,7 @@ const StudioProduct: React.FC = () => {
           className="w-full py-4 bg-gradient-to-r from-pink-500 to-primary text-white font-bold rounded-xl shadow-lg shadow-purple-500/20 hover:scale-[1.02] hover:shadow-purple-500/40 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
           {loading ? <RefreshCw className="w-5 h-5 animate-spin" /> : <RefreshCw className="w-5 h-5" />}
-          {loading ? "Gerando..." : (image ? "Transformar Produto" : "Gerar do Zero")}
+          {loading ? "Processando Imagem..." : (image ? "Transformar Produto" : "Gerar do Zero")}
         </button>
       </div>
 
@@ -95,6 +102,7 @@ const StudioProduct: React.FC = () => {
             <div className="text-center">
                 <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
                 <p className="text-primary font-bold animate-pulse">A Mágica Acontece...</p>
+                <p className="text-xs text-slate-500 mt-2">Conectando API Leonardo.Ai</p>
             </div>
         )}
 

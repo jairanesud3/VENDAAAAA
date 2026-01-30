@@ -57,11 +57,6 @@ const container = {
   }
 };
 
-const item = {
-  hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0 }
-};
-
 const Features: React.FC = () => {
   return (
     <section className="py-20 relative overflow-hidden">
@@ -100,18 +95,35 @@ const Features: React.FC = () => {
         {featuresData.map((feature, index) => (
           <motion.div 
             key={index} 
-            variants={item}
-            className="group bg-card/50 backdrop-blur-sm border border-white/5 rounded-2xl p-8 hover:border-primary/50 transition-all duration-300 hover:shadow-[0_0_30px_rgba(168,85,247,0.15)] hover:-translate-y-2 cursor-default"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="group relative bg-card/50 backdrop-blur-sm border border-white/5 rounded-2xl p-8 overflow-hidden"
           >
-            <div className={`w-14 h-14 rounded-xl ${feature.bg} flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300 shadow-inner`}>
+            {/* Continuous Glow Animation */}
+            <motion.div 
+                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent"
+                animate={{ x: ['-100%', '200%'] }}
+                transition={{ duration: 3, repeat: Infinity, ease: "linear", delay: index * 1 }}
+            />
+            
+            <motion.div 
+              className={`w-14 h-14 rounded-xl ${feature.bg} flex items-center justify-center mb-6 shadow-inner`}
+              animate={{ rotate: [0, 5, -5, 0] }}
+              transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: index * 0.2 }}
+            >
               <feature.icon className={`w-7 h-7 ${feature.color}`} />
-            </div>
-            <h4 className="text-xl font-bold text-white mb-3 group-hover:text-primary transition-colors">
+            </motion.div>
+            
+            <h4 className="text-xl font-bold text-white mb-3 group-hover:text-primary transition-colors relative z-10">
               {feature.title}
             </h4>
-            <p className="text-slate-400 leading-relaxed group-hover:text-slate-300 transition-colors">
+            <p className="text-slate-400 leading-relaxed group-hover:text-slate-300 transition-colors relative z-10">
               {feature.desc}
             </p>
+
+            {/* Border Glow on Hover */}
+            <div className="absolute inset-0 border border-white/5 rounded-2xl group-hover:border-primary/30 transition-colors duration-500"></div>
           </motion.div>
         ))}
       </motion.div>

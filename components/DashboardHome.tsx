@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Megaphone, Camera, Zap, ArrowRight, TrendingUp, AlertCircle, Mail, UserCircle } from 'lucide-react';
 import ThemeSelector from '../ThemeSelector';
+import { manageSubscriptionAction } from '../../lib/ai-actions';
 
 interface DashboardHomeProps {
   onNavigate: (tab: string) => void;
@@ -30,6 +31,17 @@ const DashboardHome: React.FC<DashboardHomeProps> = ({ onNavigate, userData }) =
         return () => clearTimeout(timer);
     }
   }, [userData]);
+
+  const handleManageSubscription = async () => {
+    // In a real app this would redirect to stripe
+    const url = await manageSubscriptionAction(user?.id);
+    if (url.startsWith('http')) {
+        window.open(url, '_blank');
+    } else {
+        // If free user, show plans (mocked by alerting or navigating to upgrade)
+        alert("Você está no plano Gratuito. Atualize para o Pro!");
+    }
+  };
 
   // Safe Name Extraction
   const firstName = user?.user_metadata?.full_name?.split(' ')[0] || "Empreendedor";
@@ -111,7 +123,10 @@ const DashboardHome: React.FC<DashboardHomeProps> = ({ onNavigate, userData }) =
             <div className="bg-gradient-to-br from-primary/20 to-surface border border-primary/20 p-6 rounded-2xl relative overflow-hidden flex flex-col justify-center">
               <h3 className="text-white font-bold text-lg mb-2">Plano Escala Pro ⚡</h3>
               <p className="text-slate-400 text-sm mb-4">Acesso total a todas as ferramentas.</p>
-              <button className="text-primary text-sm font-bold hover:text-white transition-colors flex items-center gap-1">
+              <button 
+                onClick={handleManageSubscription}
+                className="text-primary text-sm font-bold hover:text-white transition-colors flex items-center gap-1"
+              >
                 Gerenciar Assinatura <ArrowRight className="w-4 h-4" />
               </button>
             </div>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowRight, Play, Check } from 'lucide-react';
+import { Zap, PlayCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface HeroProps {
@@ -8,120 +8,102 @@ interface HeroProps {
 
 const Hero: React.FC<HeroProps> = ({ onNavigate }) => {
   return (
-    <section className="flex flex-col items-center text-center max-w-6xl mx-auto mb-20 relative z-10 pt-10">
+    <section className="flex flex-col items-center text-center max-w-7xl mx-auto mb-20 relative z-10 pt-20 px-4">
       
-      {/* 10x Speed Orb Background (CSS Animation in index.html) */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-primary/20 blur-[100px] rounded-full pointer-events-none -z-10 animate-pulse-fast opacity-50"></div>
+      {/* Background Ambience */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-primary/10 blur-[130px] rounded-full pointer-events-none -z-10 animate-pulse-slow"></div>
 
-      {/* Badge */}
+      {/* Trust Badge */}
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
-        className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/10 bg-white/5 backdrop-blur-sm mb-8 hover:bg-white/10 transition-colors cursor-default"
+        className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/5 bg-white/5 backdrop-blur-md mb-8 hover:bg-white/10 transition-colors cursor-default"
       >
-        <span className="relative flex h-2.5 w-2.5">
-          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accentGreen opacity-75"></span>
-          <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-accentGreen"></span>
+        <span className="relative flex h-2 w-2">
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75"></span>
+          <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
         </span>
-        <span className="text-sm font-medium text-slate-300">
-          Nova IA V.2.5: O Poder do Gemini Flash
+        <span className="text-xs font-bold text-slate-300 tracking-wide uppercase">
+          Nova Engine V4.0 Disponível
         </span>
       </motion.div>
 
-      {/* Headline */}
+      {/* Headline Aggressive */}
       <motion.h1 
-        initial={{ opacity: 0, scale: 0.9 }}
+        initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
         className="text-6xl md:text-8xl font-extrabold tracking-tight mb-6 leading-[1.1]"
       >
-        <span className="block text-white">Transforme Produtos</span>
-        <span className="block mt-2">
-          em <span className="text-transparent bg-clip-text bg-gradient-to-r from-accentGreen to-emerald-400 drop-shadow-[0_0_20px_rgba(34,197,94,0.4)]">
+        <span className="block text-white drop-shadow-2xl">Transforme Produtos</span>
+        <span className="block mt-1">
+          em <span className="text-[#22c55e] drop-shadow-[0_0_50px_rgba(34,197,94,0.6)] animate-pulse-slow">
             DINHEIRO.
           </span>
         </span>
       </motion.h1>
 
-      {/* Sub-headline */}
-      <motion.h2 
+      {/* Sub-headline Neon Clean */}
+      <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
-        className="text-2xl md:text-3xl font-bold text-white mb-6"
+        className="flex flex-col md:flex-row items-center gap-3 justify-center mb-8"
       >
-        Anúncios Virais em <span className="relative inline-block px-2 text-white italic transform -skew-x-6 bg-primaryNeon/20 border border-primaryNeon/50 rounded shadow-[0_0_15px_rgba(217,70,239,0.5)]">30 SEGUNDOS</span>.
-      </motion.h2>
+        <span className="text-2xl md:text-4xl font-bold text-slate-200">Anúncios Virais em</span>
+        <span 
+          className="text-3xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500 italic transform -skew-x-6"
+          style={{ filter: 'drop-shadow(0 0 20px rgba(168, 85, 247, 0.5))' }}
+        >
+          30 SEGUNDOS.
+        </span>
+      </motion.div>
 
-      {/* Description */}
+      {/* Value Proposition */}
       <motion.p 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.5 }}
-        className="text-lg md:text-xl text-slate-400 max-w-3xl mb-10 leading-relaxed"
+        className="text-lg text-slate-400 max-w-2xl mb-10 leading-relaxed font-medium"
       >
-        A IA treinada para Vendas Online. Gere <span className="text-white font-semibold">textos que convencem</span> e <span className="text-white font-semibold">imagens de estúdio</span> instantaneamente.
+        A única IA treinada com <span className="text-white font-semibold">20.000+ anúncios vencedores</span>. 
+        Gere copy de alta conversão, imagens de estúdio e personas sem precisar de designer ou copywriter.
       </motion.p>
 
-      {/* NEW PAYMENT / CONVERSION BOX */}
+      {/* High-Ticket CTA */}
       <motion.div 
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.7 }}
-        className="bg-surface/50 border border-white/10 backdrop-blur-md rounded-2xl p-6 md:p-8 w-full max-w-2xl relative overflow-hidden shadow-2xl"
+        className="flex flex-col sm:flex-row items-center gap-4 w-full justify-center"
       >
-        {/* Glow behind box */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-50"></div>
+         <button 
+           onClick={onNavigate}
+           className="relative px-8 py-5 bg-white text-black font-bold rounded-xl shadow-[0_0_40px_rgba(255,255,255,0.2)] hover:shadow-[0_0_60px_rgba(255,255,255,0.3)] hover:scale-[1.02] transition-all flex items-center gap-3 overflow-hidden group"
+         >
+            <Zap className="w-5 h-5 fill-black" />
+            <span className="text-lg tracking-wide">COMEÇAR GRÁTIS</span>
+         </button>
+         
+         <button className="px-8 py-5 rounded-xl border border-white/10 text-white font-bold hover:bg-white/5 transition-all flex items-center gap-3">
+            <PlayCircle className="w-5 h-5" />
+            Ver Demo em Vídeo
+         </button>
+      </motion.div>
 
-        <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
-          
-          {/* Option A: Free Trial */}
-          <div className="w-full md:w-1/2">
-             <button 
-               onClick={onNavigate}
-               className="w-full py-4 bg-white/5 border border-white/10 text-white font-bold rounded-xl hover:bg-white/10 transition-all flex flex-col items-center gap-1 group"
-             >
-                <span className="text-lg group-hover:text-white transition-colors">Começar Teste Grátis</span>
-                <span className="text-xs text-slate-500 font-normal">Sem cartão de crédito necessário</span>
-             </button>
-          </div>
-
-          <div className="text-slate-500 font-bold text-sm">OU</div>
-
-          {/* Option B: Pro Plan (Pulsing) */}
-          <div className="w-full md:w-1/2 relative group">
-             <div className="absolute -inset-1 bg-gradient-to-r from-primary to-primaryNeon rounded-xl blur opacity-30 group-hover:opacity-60 transition duration-500 animate-pulse"></div>
-             <button 
-               onClick={onNavigate}
-               className="relative w-full py-4 bg-gradient-to-r from-primary to-primaryDark text-white font-bold rounded-xl shadow-neon-primary hover:scale-[1.02] transition-all flex flex-col items-center gap-1 overflow-hidden"
-             >
-                {/* Shine Effect */}
-                <div className="absolute inset-0 bg-white/20 translate-x-[-100%] skew-x-12 group-hover:translate-x-[200%] transition-transform duration-700"></div>
-                
-                <span className="text-lg flex items-center gap-2">
-                  Plano Pro - R$ 97,00 <ArrowRight className="w-4 h-4" />
-                </span>
-                <span className="text-xs text-white/80 font-normal bg-black/20 px-2 py-0.5 rounded-full">
-                  Oferta por tempo limitado
-                </span>
-             </button>
-          </div>
-        </div>
-
-        {/* Trust Indicators */}
-        <div className="mt-6 flex flex-wrap justify-center gap-4 text-xs text-slate-400">
-           <div className="flex items-center gap-1.5">
-             <Check className="w-3 h-3 text-accentGreen" /> Cancelamento fácil
-           </div>
-           <div className="flex items-center gap-1.5">
-             <Check className="w-3 h-3 text-accentGreen" /> 7 dias de garantia
-           </div>
-           <div className="flex items-center gap-1.5">
-             <Check className="w-3 h-3 text-accentGreen" /> Acesso imediato
-           </div>
-        </div>
-
+      {/* Social Proof (Micro) */}
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1 }}
+        className="mt-12 flex items-center gap-4 text-xs text-slate-500 font-medium bg-white/5 px-6 py-3 rounded-full backdrop-blur-sm border border-white/5"
+      >
+         <div className="flex -space-x-2">
+            {[1,2,3,4].map(i => (
+                <div key={i} className="w-6 h-6 rounded-full bg-slate-700 border border-[#05010D]"></div>
+            ))}
+         </div>
+         <span>Usado por +10.000 Dropshippers Elite</span>
       </motion.div>
     </section>
   );
