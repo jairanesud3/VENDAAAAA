@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Megaphone, Camera, Zap, TrendingUp, Clock, Calendar, Mail, UserCircle } from 'lucide-react';
 import ThemeSelector from '../ThemeSelector'; // Imports from parent components folder
-import { manageSubscriptionAction } from '../../lib/ai-actions';
 import { motion } from 'framer-motion';
+import { supabase } from '../../lib/supabase';
 
 interface DashboardHomeProps {
   onNavigate: (tab: string) => void;
@@ -16,26 +16,29 @@ const DashboardHome: React.FC<DashboardHomeProps> = ({ onNavigate, userData }) =
   const [currentDate, setCurrentDate] = useState('');
 
   useEffect(() => {
+    // Time greeting logic
     const hour = new Date().getHours();
     if (hour < 12) setGreeting('Bom dia');
     else if (hour < 18) setGreeting('Boa tarde');
     else setGreeting('Boa noite');
 
+    // Date logic
     const dateOptions: Intl.DateTimeFormatOptions = { weekday: 'long', day: 'numeric', month: 'long' };
     setCurrentDate(new Date().toLocaleDateString('pt-BR', dateOptions));
 
+    // Fetch user if not provided prop
     if (userData) {
         setUser(userData);
         setLoading(false);
     } else {
-        const timer = setTimeout(() => {
-            setUser({
-              id: 'fallback_user',
-              user_metadata: { full_name: 'Hacker', avatar_url: null }
-            });
+        const fetchUser = async () => {
+            const { data } = await supabase.auth.getUser();
+            if (data.user) {
+                setUser(data.user);
+            }
             setLoading(false);
-        }, 800);
-        return () => clearTimeout(timer);
+        };
+        fetchUser();
     }
   }, [userData]);
 

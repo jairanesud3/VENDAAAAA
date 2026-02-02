@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, ArrowLeft, User, ShoppingBag, Lock, Zap, CheckCircle } from 'lucide-react';
+import { ArrowRight, ArrowLeft, User, ShoppingBag, Loader2, Zap, CheckCircle } from 'lucide-react';
+import { supabase } from '../../lib/supabase';
 
 interface OnboardingProps {
   onComplete: (data: any) => void;
@@ -9,24 +10,22 @@ interface OnboardingProps {
 
 const steps = [
   { id: 1, title: 'Perfil', desc: 'Vamos personalizar sua experiência.' },
-  { id: 2, title: 'Negócio', desc: 'Fale sobre sua operação.' },
-  { id: 3, title: 'Acesso', desc: 'Crie sua conta segura.' }
+  { id: 2, title: 'Negócio', desc: 'Fale sobre sua operação.' }
 ];
 
 const Onboarding: React.FC<OnboardingProps> = ({ onComplete, onBack }) => {
   const [currentStep, setCurrentStep] = useState(1);
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     gender: '', // 'male' | 'female'
     storeName: '',
     niche: '',
-    revenue: '',
-    email: '',
-    password: ''
+    revenue: ''
   });
 
   const handleNext = () => {
-    if (currentStep < 3) setCurrentStep(currentStep + 1);
+    if (currentStep < 2) setCurrentStep(currentStep + 1);
     else handleFinish();
   };
 
@@ -36,25 +35,31 @@ const Onboarding: React.FC<OnboardingProps> = ({ onComplete, onBack }) => {
   };
 
   const handleFinish = async () => {
-    // Simulate API call to Supabase
-    const avatar = formData.gender === 'female' 
-      ? 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200&auto=format&fit=crop'
-      : 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=200&auto=format&fit=crop';
-      
-    const userData = {
-        id: 'user_' + Date.now(),
-        email: formData.email,
-        onboarding_completed: true, // FLAG DE FINALIZAÇÃO IMPORTANTE
-        user_metadata: {
-            full_name: formData.name,
-            avatar_url: avatar,
-            store_name: formData.storeName
-        }
-    };
-    
-    // Artificial delay for UX
-    await new Promise(r => setTimeout(r, 800));
-    onComplete(userData);
+    setLoading(true);
+    try {
+        const avatar = formData.gender === 'female' 
+        ? 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200&auto=format&fit=crop'
+        : 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=200&auto=format&fit=crop';
+
+        const { data: { user }, error } = await supabase.auth.updateUser({
+            data: {
+                full_name: formData.name,
+                avatar_url: avatar,
+                store_name: formData.storeName,
+                niche: formData.niche,
+                revenue: formData.revenue,
+                onboarding_completed: true
+            }
+        });
+
+        if (error) throw error;
+        
+        onComplete(user);
+    } catch (error) {
+        console.error("Onboarding Error:", error);
+    } finally {
+        setLoading(false);
+    }
   };
 
   const updateField = (field: string, value: string) => {
@@ -72,7 +77,7 @@ const Onboarding: React.FC<OnboardingProps> = ({ onComplete, onBack }) => {
         <div className="mb-12">
             <div className="flex justify-between mb-4">
                 {steps.map((s, i) => (
-                    <div key={s.id} className={`flex flex-col items-center gap-2 w-1/3 ${currentStep >= s.id ? 'opacity-100' : 'opacity-40'}`}>
+                    <div key={s.id} className={`flex flex-col items-center gap-2 w-1/2 ${currentStep >= s.id ? 'opacity-100' : 'opacity-40'}`}>
                         <div className={`
                             w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm border-2 transition-all duration-500
                             ${currentStep > s.id ? 'bg-accentGreen border-accentGreen text-black' : currentStep === s.id ? 'bg-primary border-primary text-white shadow-[0_0_15px_rgba(168,85,247,0.5)]' : 'bg-transparent border-white/20 text-white'}
@@ -86,7 +91,7 @@ const Onboarding: React.FC<OnboardingProps> = ({ onComplete, onBack }) => {
             <div className="h-1 w-full bg-white/10 rounded-full overflow-hidden">
                 <motion.div 
                     initial={{ width: '0%' }}
-                    animate={{ width: `${((currentStep - 1) / 2) * 100}%` }}
+                    animate={{ width: `${((currentStep - 1) / 1) * 100}%` }}
                     className="h-full bg-gradient-to-r from-primary to-accentGreen"
                 />
             </div>
@@ -209,52 +214,6 @@ const Onboarding: React.FC<OnboardingProps> = ({ onComplete, onBack }) => {
                 </motion.div>
             )}
 
-            {/* STEP 3: AUTH */}
-            {currentStep === 3 && (
-                <motion.div
-                    key="step3"
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
-                    className="space-y-6"
-                >
-                    <div className="text-center mb-8">
-                        <h2 className="text-3xl font-bold text-white mb-2">Acesso Seguro</h2>
-                        <p className="text-slate-400">Seus dados estão protegidos com criptografia de ponta.</p>
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-medium text-slate-300 mb-2">E-mail Profissional</label>
-                        <input 
-                            type="email" 
-                            value={formData.email}
-                            onChange={(e) => updateField('email', e.target.value)}
-                            className="w-full bg-[#0F0518] border border-white/10 rounded-xl px-4 py-3.5 text-white focus:outline-none focus:border-primary transition-all"
-                            placeholder="voce@sualoja.com"
-                            autoFocus
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-medium text-slate-300 mb-2">Senha Forte</label>
-                        <div className="relative">
-                            <Lock className="absolute left-4 top-3.5 w-5 h-5 text-slate-500" />
-                            <input 
-                                type="password" 
-                                value={formData.password}
-                                onChange={(e) => updateField('password', e.target.value)}
-                                className="w-full bg-[#0F0518] border border-white/10 rounded-xl px-12 py-3.5 text-white focus:outline-none focus:border-primary transition-all"
-                                placeholder="••••••••"
-                            />
-                        </div>
-                    </div>
-
-                    <div className="text-xs text-slate-500 text-center">
-                        Ao continuar, você concorda com nossos Termos e Política de Privacidade.
-                    </div>
-                </motion.div>
-            )}
-
         </AnimatePresence>
 
         {/* Navigation Buttons */}
@@ -269,17 +228,19 @@ const Onboarding: React.FC<OnboardingProps> = ({ onComplete, onBack }) => {
             
             <button 
                 onClick={handleNext}
-                disabled={(currentStep === 1 && !formData.name) || (currentStep === 2 && !formData.storeName) || (currentStep === 3 && !formData.email)}
+                disabled={loading || (currentStep === 1 && !formData.name) || (currentStep === 2 && !formData.storeName)}
                 className="flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-primary to-primaryDark text-white font-bold rounded-xl shadow-lg shadow-primary/20 hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
             >
-                {currentStep === 3 ? (
-                    <>
-                      <Zap className="w-5 h-5 fill-white" /> Acessar Dashboard
-                    </>
-                ) : (
-                    <>
-                      Próximo <ArrowRight className="w-5 h-5" />
-                    </>
+                {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : (
+                    currentStep === 2 ? (
+                        <>
+                          <Zap className="w-5 h-5 fill-white" /> Concluir Setup
+                        </>
+                    ) : (
+                        <>
+                          Próximo <ArrowRight className="w-5 h-5" />
+                        </>
+                    )
                 )}
             </button>
         </div>
