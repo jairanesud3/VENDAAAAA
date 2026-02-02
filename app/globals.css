@@ -12,8 +12,7 @@
 
 body {
   /* Deep Radial Gradient Background matching the V2.5 design */
-  background: radial-gradient(circle at 50% -20%, #2e1065 0%, #05010D 50%, #020005 100%);
-  background-attachment: fixed;
+  background-color: #05010D;
   color: white;
   font-family: 'Plus Jakarta Sans', sans-serif;
   overflow-x: hidden;
@@ -30,10 +29,12 @@ body {
     top: 0;
     left: 0;
     width: 100vw;
-    height: 100vh;
+    height: 100vh; /* Fallback */
+    height: 100dvh; /* Mobile friendly */
     overflow: hidden;
     z-index: -1;
     pointer-events: none;
+    background: radial-gradient(circle at 50% -20%, #2e1065 0%, #05010D 50%, #020005 100%);
 }
 
 .orb-1, .orb-2 {
@@ -91,6 +92,10 @@ body {
 }
 ::-webkit-scrollbar-thumb:hover {
   background: rgb(var(--color-primary)); 
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
 }
 
 /* Effects */

@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Megaphone, Camera, Zap, TrendingUp, Clock, Calendar, Mail, UserCircle } from 'lucide-react';
+import { Megaphone, Camera, Zap, TrendingUp, Clock, Calendar, Mail, UserCircle, Wrench, ChevronRight } from 'lucide-react';
 import ThemeSelector from '../ThemeSelector'; 
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../../lib/supabase';
 import DashboardTour from './DashboardTour';
+import { TOOLS_LIST } from './ExtraTools';
 
 interface DashboardHomeProps {
   onNavigate: (tab: string) => void;
@@ -165,15 +166,51 @@ const DashboardHome: React.FC<DashboardHomeProps> = ({ onNavigate, userData }) =
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2 space-y-6">
-             <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                <Zap className="w-5 h-5 text-yellow-400" /> Acesso Rápido
-             </h2>
-             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <ShortcutCard icon={Megaphone} title="Gerador de Anúncios" desc="Crie copies persuasivas." color="text-blue-500" onClick={() => onNavigate('ads')} />
-                <ShortcutCard icon={Camera} title="Studio Product AI" desc="Fotos 4K em segundos." color="text-pink-500" onClick={() => onNavigate('studio')} />
-                <ShortcutCard icon={Mail} title="Email Marketing" desc="Funis de alta conversão." color="text-orange-500" onClick={() => onNavigate('email')} />
-                <ShortcutCard icon={UserCircle} title="Persona Hacker" desc="Descubra seu público." color="text-purple-500" onClick={() => onNavigate('persona')} />
+          <div className="lg:col-span-2 space-y-8">
+             
+             {/* Main Shortcuts */}
+             <div>
+                <h2 className="text-xl font-bold text-white flex items-center gap-2 mb-6">
+                    <Zap className="w-5 h-5 text-yellow-400" /> Acesso Rápido
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <ShortcutCard icon={Megaphone} title="Gerador de Anúncios" desc="Crie copies persuasivas." color="text-blue-500" onClick={() => onNavigate('ads')} />
+                    <ShortcutCard icon={Camera} title="Studio Product AI" desc="Fotos 4K em segundos." color="text-pink-500" onClick={() => onNavigate('studio')} />
+                    <ShortcutCard icon={Mail} title="Email Marketing" desc="Funis de alta conversão." color="text-orange-500" onClick={() => onNavigate('email')} />
+                    <ShortcutCard icon={UserCircle} title="Persona Hacker" desc="Descubra seu público." color="text-purple-500" onClick={() => onNavigate('persona')} />
+                </div>
+             </div>
+
+             {/* Utilities Compact Grid */}
+             <div>
+                <div className="flex justify-between items-center mb-6">
+                    <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                        <Wrench className="w-5 h-5 text-slate-400" /> Utilitários
+                    </h2>
+                    <button 
+                        onClick={() => onNavigate('utilities')}
+                        className="text-xs text-primary font-bold flex items-center gap-1 hover:underline"
+                    >
+                        Ver Todos <ChevronRight className="w-3 h-3" />
+                    </button>
+                </div>
+                
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                    {TOOLS_LIST.slice(0, 8).map(tool => (
+                        <motion.button
+                            key={tool.id}
+                            onClick={() => onNavigate(`utilities-${tool.id}`)}
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            className="bg-white/5 border border-white/5 hover:bg-white/10 rounded-xl p-4 flex flex-col items-center text-center gap-2 transition-colors"
+                        >
+                             <div className={`w-8 h-8 rounded-lg bg-black/20 flex items-center justify-center`}>
+                                <tool.icon className={`w-4 h-4 ${tool.color}`} />
+                            </div>
+                            <span className="text-[10px] font-bold text-slate-300 leading-tight">{tool.title}</span>
+                        </motion.button>
+                    ))}
+                </div>
              </div>
           </div>
       </div>

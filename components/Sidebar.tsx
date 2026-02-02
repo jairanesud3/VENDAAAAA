@@ -3,10 +3,11 @@ import {
   Zap, Home, Megaphone, Camera, 
   Mail, Users, FileText, Settings, LogOut,
   Calculator, UserCircle2, Library, CreditCard,
-  PanelLeftClose, PanelLeftOpen, Wrench
+  PanelLeftClose, PanelLeftOpen, ChevronDown, ChevronRight
 } from 'lucide-react';
 import Link from 'next/link';
 import { AnimatePresence, motion } from 'framer-motion';
+import { TOOLS_LIST } from './dashboard/ExtraTools';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -22,6 +23,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     isOpen, onClose, onLogout, activeTab, onTabChange, isCollapsed, toggleCollapse 
 }) => {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [utilsOpen, setUtilsOpen] = useState(true);
 
   const handleNav = (tab: string) => {
       onTabChange(tab);
@@ -79,13 +81,49 @@ const Sidebar: React.FC<SidebarProps> = ({
              <MenuItem icon={Library} label="Minha Biblioteca" active={activeTab === 'library'} onClick={() => handleNav('library')} collapsed={isCollapsed} />
           </MenuSection>
 
-          <MenuSection title="FERRAMENTAS AI" isCollapsed={isCollapsed}>
+          <MenuSection title="FERRAMENTAS PRINCIPAIS" isCollapsed={isCollapsed}>
              <MenuItem icon={Megaphone} label="Gerador de Anúncios" active={activeTab === 'ads'} onClick={() => handleNav('ads')} collapsed={isCollapsed} badge="HOT" />
              <MenuItem icon={Camera} label="Studio Product AI" active={activeTab === 'studio'} onClick={() => handleNav('studio')} collapsed={isCollapsed} />
              <MenuItem icon={Mail} label="Email Marketing" active={activeTab === 'email'} onClick={() => handleNav('email')} collapsed={isCollapsed} />
              <MenuItem icon={FileText} label="Artigos SEO" active={activeTab === 'seo'} onClick={() => handleNav('seo')} collapsed={isCollapsed} />
-             <MenuItem icon={Wrench} label="Utilitários (Novo)" active={activeTab === 'utilities'} onClick={() => handleNav('utilities')} collapsed={isCollapsed} />
           </MenuSection>
+
+          {/* UTILITIES SECTION - COLLAPSIBLE */}
+           <div className="mb-6">
+                {!isCollapsed && (
+                    <div 
+                        className="flex items-center justify-between text-[10px] font-extrabold text-slate-600 uppercase tracking-widest mb-3 px-3 cursor-pointer hover:text-white transition-colors"
+                        onClick={() => setUtilsOpen(!utilsOpen)}
+                    >
+                        <span>UTILITÁRIOS PRO</span>
+                        {utilsOpen ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
+                    </div>
+                )}
+                {isCollapsed && <div className="text-[10px] font-extrabold text-slate-600 uppercase tracking-widest mb-3 px-3 text-center">...</div>}
+
+                <AnimatePresence>
+                    {(utilsOpen || isCollapsed) && (
+                        <motion.div 
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: 'auto', opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            className="space-y-1"
+                        >
+                            {TOOLS_LIST.map(tool => (
+                                <MenuItem 
+                                    key={tool.id}
+                                    icon={tool.icon} 
+                                    label={tool.title} 
+                                    active={activeTab === `utilities-${tool.id}`} 
+                                    onClick={() => handleNav(`utilities-${tool.id}`)} 
+                                    collapsed={isCollapsed} 
+                                    compact
+                                />
+                            ))}
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+           </div>
 
           <MenuSection title="ESTRATÉGIA" isCollapsed={isCollapsed}>
              <MenuItem icon={Users} label="Influencer Hunter" active={activeTab === 'partners'} onClick={() => handleNav('partners')} collapsed={isCollapsed} />
@@ -183,18 +221,19 @@ const MenuSection: React.FC<{ title: string, isCollapsed: boolean, children: Rea
     </div>
 );
 
-const MenuItem: React.FC<{ icon: any, label: string, active?: boolean, badge?: string, collapsed: boolean, onClick: () => void }> = ({ icon: Icon, label, active, badge, collapsed, onClick }) => (
+const MenuItem: React.FC<{ icon: any, label: string, active?: boolean, badge?: string, collapsed: boolean, onClick: () => void, compact?: boolean }> = ({ icon: Icon, label, active, badge, collapsed, onClick, compact }) => (
   <button 
     onClick={onClick}
     title={label}
     className={`
-    w-full flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium transition-all duration-200 group relative
+    w-full flex items-center gap-3 px-3 rounded-xl text-sm font-medium transition-all duration-200 group relative
+    ${compact ? 'py-2.5 text-xs' : 'py-3'}
     ${active 
       ? 'bg-primary/10 text-white shadow-[0_0_15px_rgba(168,85,247,0.15)] border border-primary/20' 
       : 'text-slate-400 hover:text-white hover:bg-white/5 border border-transparent'}
     ${collapsed ? 'justify-center' : ''}
   `}>
-    <Icon className={`w-5 h-5 flex-shrink-0 transition-colors ${active ? 'text-primary' : 'text-slate-500 group-hover:text-white'}`} />
+    <Icon className={`${compact ? 'w-4 h-4' : 'w-5 h-5'} flex-shrink-0 transition-colors ${active ? 'text-primary' : 'text-slate-500 group-hover:text-white'}`} />
     
     {!collapsed && (
         <div className="flex-1 flex items-center justify-between overflow-hidden">

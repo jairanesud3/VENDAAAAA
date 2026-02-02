@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Copy, Instagram, Facebook, Zap, Loader2, Twitter, Linkedin, Pin, Megaphone, Check, ShoppingBag, ShoppingBasket, Box, Shirt, Repeat, ExternalLink, Lock } from 'lucide-react';
 import { Toast } from '../ui/Toast';
 import { generateAdCopyAction } from '../../lib/ai-actions';
+import { cleanAIResponse } from '../../lib/utils';
 import ToolHeader from './ToolHeader';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -78,7 +79,7 @@ const AdGenerator: React.FC = () => {
       const context = `${channelType.toUpperCase()}_${selectedChannels[0] || 'GENERIC'}`;
       const result = await generateAdCopyAction(productName, price, context);
       
-      setGeneratedText(result);
+      setGeneratedText(cleanAIResponse(result)); // CLEANED RESPONSE
       if (selectedChannels.length > 0) setActiveTab(selectedChannels[0]);
 
       // Increment Usage

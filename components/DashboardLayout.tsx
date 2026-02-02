@@ -32,6 +32,12 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ onBack, userData }) =
 
   // Router Switch
   const renderContent = () => {
+    // Check if it is a specific utility tool (e.g., utilities-product_namer)
+    if (activeTab.startsWith('utilities-')) {
+        const toolId = activeTab.replace('utilities-', '');
+        return <ExtraTools initialToolId={toolId} onBack={() => setActiveTab('utilities')} />;
+    }
+
     switch (activeTab) {
       case 'overview': return <DashboardHome onNavigate={setActiveTab} userData={userData} />;
       case 'library': return <Library />;
@@ -39,7 +45,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ onBack, userData }) =
       case 'studio': return <StudioProduct />;
       case 'email': return <EmailGenerator />;
       case 'seo': return <SeoWriter />;
-      case 'utilities': return <ExtraTools />; // NEW 10 TOOLS
+      case 'utilities': return <ExtraTools />; 
       case 'partners': return <InfluencerFinder />;
       case 'persona': return <PersonaGenerator />;
       case 'roas': return <RoasCalculator />;

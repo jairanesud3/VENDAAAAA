@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Mail, Search, Users, Calculator, Sparkles, Copy, UserCircle, Target, BarChart, DollarSign, Loader2 } from 'lucide-react';
 import { generateAdCopyAction } from '../../lib/ai-actions';
+import { cleanAIResponse } from '../../lib/utils';
 import ToolHeader from './ToolHeader';
 
 // --- SHARED LAYOUT COMPONENT ---
@@ -78,7 +79,7 @@ export const EmailGenerator = () => {
     try {
       const context = `EMAIL_MARKETING | Tipo: ${type} | Tom: ${tone} | Público: ${target}`;
       const res = await generateAdCopyAction(product, "", context);
-      setResult(res);
+      setResult(cleanAIResponse(res));
     } catch(e) {
       setResult("Erro ao gerar email.");
     } finally { setLoading(false); }
@@ -142,7 +143,7 @@ export const SeoWriter = () => {
     try {
         const context = "BLOG_POST_SEO_ARTICLE_FULL";
         const res = await generateAdCopyAction(keyword, "", context);
-        setResult(res);
+        setResult(cleanAIResponse(res));
     } finally {
         setLoading(false);
     }
@@ -183,7 +184,7 @@ export const InfluencerFinder = () => {
     try {
         const context = `INFLUENCER_OUTREACH_STRATEGY | Plataforma: ${platform} | Tamanho: ${size}`;
         const res = await generateAdCopyAction(niche, "", context);
-        setResult(res);
+        setResult(cleanAIResponse(res));
     } finally {
         setLoading(false);
     }
@@ -227,7 +228,7 @@ export const PersonaGenerator = () => {
     try {
         const context = "BUYER_PERSONA_GENERATION_PROFILE";
         const res = await generateAdCopyAction(niche, "", context);
-        setResult(res);
+        setResult(cleanAIResponse(res));
     } finally {
         setLoading(false);
     }
