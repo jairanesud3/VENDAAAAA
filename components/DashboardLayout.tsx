@@ -10,6 +10,8 @@ import Library from './dashboard/Library';
 import Settings from './dashboard/Settings';
 import ThemeSelector from './ThemeSelector'; 
 import ExtraTools from './dashboard/ExtraTools';
+import LandingPageGenerator from './dashboard/LandingPageGenerator'; // NEW
+import Translator from './dashboard/Translator'; // NEW
 
 // AI Tools
 import { EmailGenerator, SeoWriter, InfluencerFinder, PersonaGenerator, RoasCalculator } from './dashboard/Tools';
@@ -43,6 +45,8 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ onBack, userData }) =
       case 'library': return <Library />;
       case 'ads': return <AdGenerator />;
       case 'studio': return <StudioProduct />;
+      case 'landing': return <LandingPageGenerator />; // NEW
+      case 'translator': return <Translator />; // NEW
       case 'email': return <EmailGenerator />;
       case 'seo': return <SeoWriter />;
       case 'utilities': return <ExtraTools />; 

@@ -3,7 +3,7 @@ import {
   Zap, Home, Megaphone, Camera, 
   Mail, Users, FileText, Settings, LogOut,
   Calculator, UserCircle2, Library, CreditCard,
-  PanelLeftClose, PanelLeftOpen, ChevronDown, ChevronRight
+  PanelLeftClose, PanelLeftOpen, ChevronDown, ChevronRight, Layout, Globe
 } from 'lucide-react';
 import Link from 'next/link';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -23,7 +23,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     isOpen, onClose, onLogout, activeTab, onTabChange, isCollapsed, toggleCollapse 
 }) => {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
-  const [utilsOpen, setUtilsOpen] = useState(true);
+  const [utilsOpen, setUtilsOpen] = useState(false);
 
   const handleNav = (tab: string) => {
       onTabChange(tab);
@@ -84,6 +84,8 @@ const Sidebar: React.FC<SidebarProps> = ({
           <MenuSection title="FERRAMENTAS PRINCIPAIS" isCollapsed={isCollapsed}>
              <MenuItem icon={Megaphone} label="Gerador de Anúncios" active={activeTab === 'ads'} onClick={() => handleNav('ads')} collapsed={isCollapsed} badge="HOT" />
              <MenuItem icon={Camera} label="Studio Product AI" active={activeTab === 'studio'} onClick={() => handleNav('studio')} collapsed={isCollapsed} />
+             <MenuItem icon={Layout} label="Landing Pages" active={activeTab === 'landing'} onClick={() => handleNav('landing')} collapsed={isCollapsed} />
+             <MenuItem icon={Globe} label="Tradutor Neural" active={activeTab === 'translator'} onClick={() => handleNav('translator')} collapsed={isCollapsed} />
              <MenuItem icon={Mail} label="Email Marketing" active={activeTab === 'email'} onClick={() => handleNav('email')} collapsed={isCollapsed} />
              <MenuItem icon={FileText} label="Artigos SEO" active={activeTab === 'seo'} onClick={() => handleNav('seo')} collapsed={isCollapsed} />
           </MenuSection>

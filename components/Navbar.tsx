@@ -10,55 +10,73 @@ const Navbar: React.FC<NavbarProps> = ({ onNavigate }) => {
   const { scrollY } = useScroll();
   const [isScrolled, setIsScrolled] = useState(false);
 
-  // Transform values for smooth animations based on scroll position
-  const height = useTransform(scrollY, [0, 50], [96, 70]); // 24 (h-24) to 16 (h-16) roughly
-  const backgroundOpacity = useTransform(scrollY, [0, 50], [0, 0.9]);
-  const blurAmount = useTransform(scrollY, [0, 50], [0, 16]);
+  // Transformações baseadas no scroll
+  const navPadding = useTransform(scrollY, [0, 100], ["1.5rem", "0.75rem"]); // Padding vertical diminui
+  const navWidth = useTransform(scrollY, [0, 100], ["100%", "85%"]); // Largura diminui para centralizar
+  const navTop = useTransform(scrollY, [0, 100], ["0rem", "1rem"]); // Desce um pouco para flutuar
+  const navRadius = useTransform(scrollY, [0, 100], ["0px", "24px"]); // Fica arredondado
+  
+  const logoScale = useTransform(scrollY, [0, 100], [1, 0.85]); // Logo diminui
+  const bgOpacity = useTransform(scrollY, [0, 100], [0, 0.6]); // Fundo aparece
+  const blurAmount = useTransform(scrollY, [0, 100], [0, 12]); // Blur aumenta
 
   useEffect(() => {
     return scrollY.onChange((latest) => {
-      setIsScrolled(latest > 20);
+      setIsScrolled(latest > 50);
     });
   }, [scrollY]);
 
   return (
-    <motion.nav 
-      style={{
-        height,
-        backgroundColor: useTransform(backgroundOpacity, v => `rgba(5, 1, 13, ${v})`),
-        backdropFilter: useTransform(blurAmount, v => `blur(${v}px)`),
-        borderBottom: isScrolled ? '1px solid rgba(255,255,255,0.05)' : '1px solid transparent'
-      }}
-      className="fixed top-0 left-0 right-0 z-50 flex items-center justify-center transition-colors duration-300"
-    >
-      <div className="container mx-auto px-4 flex items-center justify-between">
-        {/* Logo Area */}
-        <div className="flex items-center gap-3 group cursor-pointer" onClick={onNavigate}>
-          <motion.div 
-            animate={{ scale: isScrolled ? 0.9 : 1 }}
-            className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-primaryDark flex items-center justify-center shadow-[0_0_15px_rgba(168,85,247,0.4)] group-hover:shadow-[0_0_25px_rgba(168,85,247,0.6)] transition-all duration-300"
-          >
-            <Zap className="text-white w-6 h-6 fill-white" />
-          </motion.div>
-          <span className="text-white font-bold text-lg tracking-wide group-hover:text-primary transition-colors">DROPHACKER</span>
-        </div>
+    <div className="fixed top-0 left-0 right-0 z-50 flex justify-center pointer-events-none">
+        <motion.nav 
+        style={{
+            paddingTop: navPadding,
+            paddingBottom: navPadding,
+            width: navWidth,
+            marginTop: navTop,
+            borderRadius: navRadius,
+            backgroundColor: useTransform(bgOpacity, v => `rgba(15, 5, 24, ${v})`),
+            backdropFilter: useTransform(blurAmount, v => `blur(${v}px)`),
+            border: isScrolled ? '1px solid rgba(255,255,255,0.08)' : '1px solid transparent'
+        }}
+        className="pointer-events-auto transition-shadow duration-300 flex items-center justify-between px-6 md:px-10"
+        >
+            {/* Logo Area */}
+            <div className="flex items-center gap-3 group cursor-pointer" onClick={onNavigate}>
+                <motion.div 
+                style={{ scale: logoScale }}
+                className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-primaryDark flex items-center justify-center shadow-[0_0_15px_rgba(168,85,247,0.4)] group-hover:shadow-[0_0_25px_rgba(168,85,247,0.6)] transition-all duration-300"
+                >
+                <Zap className="text-white w-6 h-6 fill-white" />
+                </motion.div>
+                <motion.div 
+                    style={{ x: useTransform(scrollY, [0, 100], [0, -5]) }}
+                    className="flex flex-col"
+                >
+                    <span className="text-white font-bold text-lg tracking-wide group-hover:text-primary transition-colors leading-tight">DROPHACKER</span>
+                    <span className="text-[9px] text-slate-400 font-bold tracking-[0.2em] uppercase">AI Suite</span>
+                </motion.div>
+            </div>
 
-        {/* Right Actions */}
-        <div className="flex items-center gap-6">
-          <button onClick={onNavigate} className="hidden md:block text-slate-300 text-sm font-medium hover:text-white transition-colors">
-            Login
-          </button>
-          <motion.button 
-            whileHover={{ scale: 1.05, boxShadow: "0 0 20px rgba(255,255,255,0.3)" }}
-            whileTap={{ scale: 0.95 }}
-            onClick={onNavigate} 
-            className="bg-white text-black px-6 py-2.5 rounded-full text-sm font-bold shadow-lg shadow-white/10 transition-all duration-300"
-          >
-            Começar Grátis
-          </motion.button>
-        </div>
-      </div>
-    </motion.nav>
+            {/* Right Actions */}
+            <motion.div 
+                style={{ gap: useTransform(scrollY, [0, 100], ["24px", "12px"]) }}
+                className="flex items-center"
+            >
+                <button onClick={onNavigate} className="hidden md:block text-slate-300 text-sm font-medium hover:text-white transition-colors px-4 py-2 hover:bg-white/5 rounded-full">
+                Login
+                </button>
+                <motion.button 
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={onNavigate} 
+                    className="bg-white text-black px-6 py-2.5 rounded-full text-sm font-bold shadow-[0_0_20px_rgba(255,255,255,0.2)] hover:shadow-[0_0_30px_rgba(255,255,255,0.4)] transition-all duration-300"
+                >
+                Começar Grátis
+                </motion.button>
+            </motion.div>
+        </motion.nav>
+    </div>
   );
 };
 
