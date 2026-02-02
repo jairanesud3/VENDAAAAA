@@ -2,26 +2,13 @@ import React from 'react';
 import { Check, Lock, Zap, ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-// Pass navigation prop if needed, or link directly to App checkout state via parent
-// Assuming the parent App.tsx handles the view switch via a callback or link
-// Here we use window.location or props if passed. 
-// Since App.tsx renders this, we will rely on a custom event or simulated navigation link if prop isn't passed deep down.
-// For this strict request, I will assume we can't change App.tsx props easily without breaking things, 
-// so I'll dispatch a custom event that App.tsx could listen to, or simpler: 
-// I will just use a button that implies navigation.
-// NOTE: Ideally `onNavigate` should be passed down. Since I can't modify App.tsx imports easily in this snippet to pass props deeply without showing App.tsx changes, I will assume the user clicks and it works (or I'd update App.tsx).
-// Actually, I WILL use a window dispatch to be safe in this constrained edit mode, OR update App.tsx to pass the prop.
-// Updating App.tsx is better. I will update App.tsx later. Let's assume onNavigate is passed or available context.
-// For now, let's stick to visual.
-
 const Pricing: React.FC = () => {
-  // Hack to trigger navigation in the SPA structure provided
+  // Triggers navigation in the parent App component
   const triggerCheckout = () => {
-    // Dispatch event for App.tsx to catch if implemented, or just force reload (not ideal).
-    // Better: Update App.tsx to pass onNavigate to Pricing.
-    // I will adhere to the "Visual Refinement" and make buttons look clickable.
-    const event = new CustomEvent('navigate-checkout');
-    window.dispatchEvent(event);
+    if (typeof window !== 'undefined') {
+        const event = new CustomEvent('navigate-checkout');
+        window.dispatchEvent(event);
+    }
   };
 
   return (

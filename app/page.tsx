@@ -108,10 +108,10 @@ export default function Home() {
 
   // 6. Landing Page (Default)
   return (
-    <div className="min-h-screen bg-transparent text-slate-400 selection:bg-primary selection:text-white font-sans">
+    <div className="min-h-screen bg-transparent text-slate-400 selection:bg-primary selection:text-white font-sans overflow-x-hidden">
       <Navbar onNavigate={() => setCurrentView('login')} />
 
-      <main className="relative">
+      <main className="relative z-10">
         <div className="container mx-auto px-4 pt-32 pb-20">
           <Hero onNavigate={() => setCurrentView('onboarding')} />
           <DashboardPreview />
