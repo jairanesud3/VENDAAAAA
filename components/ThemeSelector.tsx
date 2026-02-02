@@ -34,7 +34,6 @@ const ThemeSelector: React.FC = () => {
   const [currentTheme, setCurrentTheme] = useState('purple');
 
   useEffect(() => {
-    // Load theme from localStorage
     const savedTheme = localStorage.getItem('drophacker_theme');
     if (savedTheme) {
       applyTheme(savedTheme);
@@ -74,7 +73,10 @@ const ThemeSelector: React.FC = () => {
               {themes.map((theme) => (
                 <button
                   key={theme.id}
-                  onClick={() => applyTheme(theme.id)}
+                  onClick={() => {
+                      applyTheme(theme.id);
+                      setIsOpen(false);
+                  }}
                   className={`flex items-center gap-3 p-2 rounded-lg transition-colors border ${currentTheme === theme.id ? 'bg-white/5 border-white/20' : 'border-transparent hover:bg-white/5'}`}
                 >
                   <div 
