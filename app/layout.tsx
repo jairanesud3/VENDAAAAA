@@ -1,9 +1,6 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import React from "react";
 import "./globals.css";
-
-const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "DropHacker AI - Transforme Produtos em Dinheiro",
@@ -17,7 +14,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR">
-      <body className={`${inter.className} bg-[#05010D] text-white antialiased selection:bg-purple-500/30 selection:text-white`}>
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+      </head>
+      <body className="font-sans antialiased selection:bg-purple-500/30 selection:text-white">
+        <div className="living-bg">
+            <div className="orb-1"></div>
+            <div className="orb-2"></div>
+        </div>
         {children}
       </body>
     </html>
