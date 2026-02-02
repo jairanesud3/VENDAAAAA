@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { UploadCloud, RefreshCw, Download, Share2, Edit, X, ImageIcon } from 'lucide-react';
+import { UploadCloud, RefreshCw, Download, Share2, Edit, X, ImageIcon, Camera } from 'lucide-react';
 import { Toast } from '../ui/Toast';
 import { generateImageAction } from '../../lib/ai-actions';
+import ToolHeader from './ToolHeader';
 
 const StudioProduct: React.FC = () => {
   const [image, setImage] = useState<string | null>(null);
@@ -38,10 +39,17 @@ const StudioProduct: React.FC = () => {
 
       {/* Left Panel: Inputs */}
       <div className="w-full lg:w-1/3 flex flex-col gap-6 overflow-y-auto">
-        <div>
-          <h1 className="text-3xl font-bold text-white mb-2">Studio Product AI</h1>
-          <p className="text-slate-400 text-sm">Crie fotos de estúdio ultra-realistas (4K). Tecnologia Leonardo.Ai Phoenix.</p>
-        </div>
+        
+        <ToolHeader 
+            title="Studio Product AI" 
+            description="Crie fotos de estúdio ultra-realistas (4K). Tecnologia Leonardo.Ai Phoenix." 
+            icon={Camera}
+            helpSteps={[
+                "Faça upload da foto do seu produto (fundo transparente é melhor).",
+                "Descreva o cenário (ex: 'Em uma mesa de madeira ao pôr do sol').",
+                "Clique em 'Transformar Produto' e aguarde a renderização."
+            ]}
+        />
 
         {/* Upload Area */}
         <div className="border-2 border-dashed border-white/20 rounded-xl bg-[#0A0510] relative group hover:border-primary/50 transition-colors">

@@ -26,7 +26,45 @@ export async function generateAdCopyAction(productName: string, price: string, c
   // Mock Latency
   await new Promise(resolve => setTimeout(resolve, 2500));
 
-  // Specialized Prompts based on Context
+  // --- MARKETPLACE LOGIC ---
+  if (context.startsWith('MARKETPLACE')) {
+      const platform = context.split('_')[1] || 'GENERIC';
+      
+      return `📢 **TÍTULO SEO (Alta Conversão):**
+${productName} Original - Pronta Entrega Com Nota Fiscal ${price ? `| Promoção R$ ${price}` : ''}
+
+⭐ **FICHA TÉCNICA:**
+- **Produto:** ${productName}
+- **Condição:** Novo / Lacrado
+- **Envio:** Imediato (Full)
+- **Garantia:** 90 Dias
+
+📝 **DESCRIÇÃO PERSUASIVA:**
+
+**CHEGOU A SOLUÇÃO QUE VOCÊ PROCURAVA!**
+
+Você não precisa mais se preocupar com qualidade duvidosa. O **${productName}** foi desenvolvido para quem exige excelência.
+
+✅ **PRINCIPAIS BENEFÍCIOS:**
+1. **Durabilidade Extrema:** Feito com materiais de primeira linha.
+2. **Design Premium:** Combina com qualquer ambiente ou estilo.
+3. **Fácil de Usar:** Não requer instalação complexa.
+
+💡 **POR QUE COMPRAR CONOSCO?**
+Somos MercadoLíder Platinum. Temos 100% de qualificações positivas e enviamos seu pedido em menos de 24 horas.
+
+📦 **O QUE VEM NA CAIXA:**
+- 01x ${productName}
+- Manual de Instruções
+
+🚀 **ESTOQUE LIMITADO:**
+Aproveite o preço promocional de lançamento. Clique em **"Comprar Agora"** e garanta o seu!
+
+🔍 **TAGS (Busca):**
+${productName.toLowerCase()}, original, barato, promoção, oferta, lançamento, qualidade, ${platform.toLowerCase()}`;
+  }
+
+  // --- EMAIL LOGIC ---
   if (context.includes('Email')) {
       return `Assunto: ⏳ Última chamada para o ${productName} (Estoque Crítico)
 
@@ -45,7 +83,7 @@ Se você busca [Benefício Principal], essa é a ferramenta definitiva. Não dei
 Te espero lá.`;
   }
 
-  // Ad Copy Template
+  // --- SOCIAL MEDIA LOGIC (Default) ---
   return `🛑 **PARE TUDO O QUE ESTÁ FAZENDO!**
 
 Você sabia que 90% das pessoas sofrem com [Problema que o produto resolve]?
@@ -59,7 +97,9 @@ Apresentamos o novo **${productName}** - A solução que virou febre nos EUA e a
 Quem comprou, não vive sem:
 _"Mudou minha vida em 3 dias!"_ - Cliente Verificada.
 
-👇 Clique em **"Saiba Mais"** e garanta o seu com Frete Grátis antes que acabe!`;
+👇 Clique em **"Saiba Mais"** e garanta o seu com Frete Grátis antes que acabe!
+
+#${productName.replace(/\s/g, '')} #novidade #promoção #imperdivel #tendencia`;
 }
 
 /**

@@ -44,6 +44,7 @@ const Onboarding: React.FC<OnboardingProps> = ({ onComplete, onBack }) => {
     const userData = {
         id: 'user_' + Date.now(),
         email: formData.email,
+        onboarding_completed: true, // FLAG DE FINALIZAÇÃO IMPORTANTE
         user_metadata: {
             full_name: formData.name,
             avatar_url: avatar,

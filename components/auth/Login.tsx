@@ -2,12 +2,31 @@ import React from 'react';
 import { Zap, ArrowLeft } from 'lucide-react';
 
 interface LoginProps {
-  onLogin: () => void;
+  onLogin: (user: any) => void;
   onRegisterClick: () => void;
   onBack: () => void;
 }
 
 const Login: React.FC<LoginProps> = ({ onLogin, onRegisterClick, onBack }) => {
+  
+  const handleLoginSubmit = () => {
+      // Simulate fetching a user profile from Supabase
+      // TOGGLE THIS VARIABLE TO TEST ONBOARDING FLOW VS DASHBOARD FLOW
+      const mockIsOldUser = true; 
+
+      const mockUser = {
+        id: 'user_returning',
+        email: 'cliente@exemplo.com',
+        onboarding_completed: mockIsOldUser, // FLAG CRÍTICA
+        user_metadata: {
+            full_name: 'Ricardo Oliveira',
+            avatar_url: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=200&auto=format&fit=crop'
+        }
+      };
+
+      onLogin(mockUser);
+  };
+
   return (
     <div className="min-h-screen bg-[#05010D] flex items-center justify-center p-4 relative overflow-hidden">
       {/* Background Glow */}
@@ -43,7 +62,7 @@ const Login: React.FC<LoginProps> = ({ onLogin, onRegisterClick, onBack }) => {
           <span className="relative bg-surface px-4 text-xs text-slate-500 uppercase font-bold">OU</span>
         </div>
 
-        <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); onLogin(); }}>
+        <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); handleLoginSubmit(); }}>
           <div>
             <label className="block text-sm font-medium text-slate-300 mb-1.5">E-mail</label>
             <input type="email" className="w-full bg-[#05010D] border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary transition-colors" placeholder="seu@email.com" />

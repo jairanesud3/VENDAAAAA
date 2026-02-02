@@ -47,17 +47,17 @@ const App: React.FC = () => {
   if (currentView === 'login') {
     return (
       <Login 
-        onLogin={() => {
-            // Simulate fetching existing user profile
-            setUserData({
-                id: 'user_returning',
-                email: 'cliente@exemplo.com',
-                user_metadata: {
-                    full_name: 'Ricardo Oliveira',
-                    avatar_url: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=200&auto=format&fit=crop'
-                }
-            });
-            setCurrentView('dashboard');
+        onLogin={(mockUser) => {
+            // AUTH FLOW LOGIC:
+            // Check if user has completed onboarding
+            if (mockUser && mockUser.onboarding_completed) {
+                setUserData(mockUser);
+                setCurrentView('dashboard');
+            } else {
+                // New user or incomplete profile -> Force Onboarding
+                setUserData(mockUser); // Keep partial data if any
+                setCurrentView('onboarding');
+            }
         }} 
         onRegisterClick={() => setCurrentView('register')}
         onBack={() => setCurrentView('landing')}
@@ -68,7 +68,7 @@ const App: React.FC = () => {
   if (currentView === 'register') {
     return (
       <Register 
-        onRegister={() => setCurrentView('onboarding')} // New users go to onboarding
+        onRegister={() => setCurrentView('onboarding')} // New registrations always go to onboarding
         onLoginClick={() => setCurrentView('login')}
         onBack={() => setCurrentView('landing')}
       />

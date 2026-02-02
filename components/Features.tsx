@@ -84,46 +84,54 @@ const Features: React.FC = () => {
         </motion.p>
       </div>
 
-      {/* Grid */}
+      {/* Grid with 3D Tilt Effect */}
       <motion.div 
         variants={container}
         initial="hidden"
         whileInView="show"
         viewport={{ once: true, margin: "-50px" }}
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto px-4"
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto px-4 perspective-1000"
       >
         {featuresData.map((feature, index) => (
           <motion.div 
             key={index} 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="group relative bg-card/50 backdrop-blur-sm border border-white/5 rounded-2xl p-8 overflow-hidden"
+            variants={{
+              hidden: { opacity: 0, y: 50 },
+              show: { opacity: 1, y: 0 }
+            }}
+            whileHover={{ 
+              scale: 1.05, 
+              rotateX: 5, 
+              rotateY: 5,
+              z: 50,
+              boxShadow: "0 20px 50px rgba(168, 85, 247, 0.3), 0 0 20px rgba(168, 85, 247, 0.1) inset"
+            }}
+            transition={{ type: "spring", stiffness: 300, damping: 20 }}
+            style={{ transformStyle: "preserve-3d" }}
+            className="group relative bg-[#0A0510] border border-white/5 rounded-2xl p-8 overflow-hidden h-full transform-gpu transition-colors duration-300 hover:border-primary/50 hover:bg-[#0F0518]"
           >
-            {/* Continuous Glow Animation */}
+            {/* Background Glow on Hover */}
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/0 via-primary/0 to-primary/0 group-hover:from-primary/10 group-hover:to-purple-500/10 transition-all duration-500"></div>
+
+            {/* Icon - Pops out in 3D */}
             <motion.div 
-                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent"
-                animate={{ x: ['-100%', '200%'] }}
-                transition={{ duration: 3, repeat: Infinity, ease: "linear", delay: index * 1 }}
-            />
-            
-            <motion.div 
-              className={`w-14 h-14 rounded-xl ${feature.bg} flex items-center justify-center mb-6 shadow-inner`}
-              animate={{ rotate: [0, 5, -5, 0] }}
-              transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: index * 0.2 }}
+              className={`w-14 h-14 rounded-xl ${feature.bg} flex items-center justify-center mb-6 shadow-inner relative z-10`}
+              style={{ transform: "translateZ(30px)" }}
+              whileHover={{ rotate: [0, 10, -10, 0], scale: 1.1 }}
+              transition={{ duration: 0.5 }}
             >
-              <feature.icon className={`w-7 h-7 ${feature.color}`} />
+              <feature.icon className={`w-7 h-7 ${feature.color} drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]`} />
             </motion.div>
             
-            <h4 className="text-xl font-bold text-white mb-3 group-hover:text-primary transition-colors relative z-10">
-              {feature.title}
-            </h4>
-            <p className="text-slate-400 leading-relaxed group-hover:text-slate-300 transition-colors relative z-10">
-              {feature.desc}
-            </p>
-
-            {/* Border Glow on Hover */}
-            <div className="absolute inset-0 border border-white/5 rounded-2xl group-hover:border-primary/30 transition-colors duration-500"></div>
+            {/* Text Content */}
+            <div style={{ transform: "translateZ(20px)" }} className="relative z-10">
+                <h4 className="text-xl font-bold text-white mb-3 group-hover:text-primary transition-colors group-hover:drop-shadow-[0_0_8px_rgba(168,85,247,0.5)]">
+                {feature.title}
+                </h4>
+                <p className="text-slate-400 leading-relaxed group-hover:text-slate-200 transition-colors">
+                {feature.desc}
+                </p>
+            </div>
           </motion.div>
         ))}
       </motion.div>

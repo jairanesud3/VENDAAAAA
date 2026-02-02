@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import { 
   Zap, Home, Megaphone, Camera, 
   Mail, Users, FileText, Settings, LogOut,
-  Calculator, UserCircle2, Library, ChevronLeft, ChevronRight, AlertTriangle, CreditCard
+  Calculator, UserCircle2, Library, CreditCard,
+  PanelLeftClose, PanelLeftOpen
 } from 'lucide-react';
+import Link from 'next/link';
 import { AnimatePresence, motion } from 'framer-motion';
-import { handleSubscriptionAction } from '../lib/billing';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -27,19 +28,6 @@ const Sidebar: React.FC<SidebarProps> = ({
       if (window.innerWidth < 768) onClose(); 
   };
 
-  const handleBillingClick = async () => {
-    // Simula ID do usuário
-    const action = await handleSubscriptionAction('user_123');
-    
-    if (action.type === 'redirect') {
-        window.open(action.url, '_blank');
-    } else {
-        // Se for Free, força o usuário a ver os planos (simulado aqui trocando tab ou alert)
-        // Idealmente abriria um Modal de Pricing. Vamos simular um alert por enquanto.
-        alert("🔒 Recurso Premium! Atualize para o Plano Pro para gerenciar sua assinatura.");
-    }
-  };
-
   return (
     <>
       {/* Overlay Mobile */}
@@ -53,34 +41,38 @@ const Sidebar: React.FC<SidebarProps> = ({
       {/* Sidebar Principal */}
       <aside className={`
         fixed top-0 left-0 h-full bg-[#05010D] border-r border-white/5 z-50
-        transform transition-all duration-300 ease-in-out
+        flex flex-col transition-all duration-300 ease-in-out
         ${isOpen ? 'translate-x-0' : '-translate-x-full'}
         md:translate-x-0
         ${isCollapsed ? 'w-20' : 'w-72'}
       `}>
         {/* Header Logo */}
-        <div className={`h-20 flex items-center border-b border-white/5 ${isCollapsed ? 'justify-center' : 'px-6 gap-3'} transition-all relative`}>
+        <div className={`h-20 flex items-center border-b border-white/5 ${isCollapsed ? 'justify-center px-0' : 'px-6 gap-3'} transition-all duration-300 flex-shrink-0 whitespace-nowrap overflow-hidden`}>
           <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary to-primaryDark flex items-center justify-center shadow-[0_0_15px_rgba(168,85,247,0.3)] flex-shrink-0">
             <Zap className="text-white w-5 h-5 fill-white" />
           </div>
           {!isCollapsed && (
-             <div className="flex flex-col">
-                <span className="text-white font-bold text-lg tracking-wide whitespace-nowrap">DROPHACKER</span>
-                <span className="text-[10px] text-primary font-bold tracking-widest uppercase">AI Suite V4</span>
+             <div className="flex flex-col overflow-hidden">
+                <motion.span 
+                  initial={{ opacity: 0 }} 
+                  animate={{ opacity: 1 }} 
+                  className="text-white font-bold text-lg tracking-wide whitespace-nowrap"
+                >
+                  DROPHACKER
+                </motion.span>
+                <motion.span 
+                  initial={{ opacity: 0 }} 
+                  animate={{ opacity: 1 }}
+                  className="text-[10px] text-primary font-bold tracking-widest uppercase whitespace-nowrap"
+                >
+                  AI Suite V4
+                </motion.span>
              </div>
           )}
         </div>
 
-        {/* Botão de Colapsar (Desktop) */}
-        <button 
-            onClick={toggleCollapse}
-            className="hidden md:flex absolute -right-3 top-24 w-6 h-6 bg-[#0A0510] border border-white/10 rounded-full items-center justify-center text-slate-400 hover:text-white hover:border-primary transition-all z-50 shadow-lg hover:shadow-primary/20"
-        >
-            {isCollapsed ? <ChevronRight className="w-3 h-3" /> : <ChevronLeft className="w-3 h-3" />}
-        </button>
-
         {/* Menu Items */}
-        <div className="p-3 space-y-8 overflow-y-auto h-[calc(100%-5rem)] custom-scrollbar">
+        <div className="flex-1 overflow-y-auto overflow-x-hidden p-3 space-y-8 custom-scrollbar">
           
           <MenuSection title="DASHBOARD" isCollapsed={isCollapsed}>
              <MenuItem icon={Home} label="Visão Geral" active={activeTab === 'overview'} onClick={() => handleNav('overview')} collapsed={isCollapsed} />
@@ -100,15 +92,28 @@ const Sidebar: React.FC<SidebarProps> = ({
              <MenuItem icon={Calculator} label="Calculadora ROAS" active={activeTab === 'roas'} onClick={() => handleNav('roas')} collapsed={isCollapsed} />
           </MenuSection>
 
-          {/* Footer Actions */}
-          <div className="pt-4 mt-auto border-t border-white/5 space-y-1">
+        </div>
+
+        {/* Footer Actions (Sticky Bottom) */}
+        <div className="p-3 border-t border-white/5 flex-shrink-0 space-y-1 bg-[#05010D]">
+             
+             {/* Collapse Toggle */}
              <button 
-                onClick={handleBillingClick}
+                onClick={toggleCollapse}
+                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-500 hover:text-white hover:bg-white/5 transition-colors text-sm font-medium hidden md:flex ${isCollapsed ? 'justify-center' : ''}`}
+                title={isCollapsed ? "Expandir Menu" : "Recolher Menu"}
+             >
+                {isCollapsed ? <PanelLeftOpen className="w-5 h-5 flex-shrink-0" /> : <PanelLeftClose className="w-5 h-5 flex-shrink-0" />}
+                {!isCollapsed && <span className="whitespace-nowrap overflow-hidden">Recolher Menu</span>}
+             </button>
+
+             <Link 
+                href="/dashboard/subscription"
                 className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-colors text-sm font-medium group ${isCollapsed ? 'justify-center' : ''}`}
              >
-                <CreditCard className="w-5 h-5 group-hover:text-primary transition-colors" />
-                {!isCollapsed && <span>Assinatura</span>}
-             </button>
+                <CreditCard className="w-5 h-5 group-hover:text-primary transition-colors flex-shrink-0" />
+                {!isCollapsed && <span className="whitespace-nowrap overflow-hidden">Assinatura</span>}
+             </Link>
 
              <MenuItem icon={Settings} label="Configurações" active={activeTab === 'settings'} onClick={() => handleNav('settings')} collapsed={isCollapsed} />
              
@@ -117,10 +122,9 @@ const Sidebar: React.FC<SidebarProps> = ({
                 className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-colors text-sm font-medium group ${isCollapsed ? 'justify-center' : ''}`}
                 title="Sair"
               >
-                <LogOut className="w-5 h-5 group-hover:text-red-400" />
-                {!isCollapsed && <span>Sair</span>}
+                <LogOut className="w-5 h-5 group-hover:text-red-400 flex-shrink-0" />
+                {!isCollapsed && <span className="whitespace-nowrap overflow-hidden">Sair</span>}
               </button>
-          </div>
         </div>
       </aside>
 
@@ -170,7 +174,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 const MenuSection: React.FC<{ title: string, isCollapsed: boolean, children: React.ReactNode }> = ({ title, isCollapsed, children }) => (
     <div className="mb-6">
         {!isCollapsed && (
-            <div className="text-[10px] font-extrabold text-slate-600 uppercase tracking-widest mb-3 px-3 transition-opacity duration-300">
+            <div className="text-[10px] font-extrabold text-slate-600 uppercase tracking-widest mb-3 px-3 transition-opacity duration-300 whitespace-nowrap overflow-hidden">
                 {title}
             </div>
         )}
@@ -183,7 +187,7 @@ const MenuItem: React.FC<{ icon: any, label: string, active?: boolean, badge?: s
     onClick={onClick}
     title={label}
     className={`
-    w-full flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium transition-all duration-200 group
+    w-full flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium transition-all duration-200 group relative
     ${active 
       ? 'bg-primary/10 text-white shadow-[0_0_15px_rgba(168,85,247,0.15)] border border-primary/20' 
       : 'text-slate-400 hover:text-white hover:bg-white/5 border border-transparent'}
@@ -193,7 +197,7 @@ const MenuItem: React.FC<{ icon: any, label: string, active?: boolean, badge?: s
     
     {!collapsed && (
         <div className="flex-1 flex items-center justify-between overflow-hidden">
-            <span className="truncate">{label}</span>
+            <span className="truncate whitespace-nowrap">{label}</span>
             {badge && (
                 <span className="text-[9px] font-bold bg-gradient-to-r from-primary to-purple-600 text-white px-1.5 py-0.5 rounded shadow-sm">
                     {badge}

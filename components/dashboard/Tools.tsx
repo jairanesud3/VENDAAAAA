@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Mail, Search, Users, Calculator, Sparkles, Copy, UserCircle, Target, BarChart, DollarSign } from 'lucide-react';
 import { generateAdCopyAction } from '../../lib/ai-actions';
+import ToolHeader from './ToolHeader';
 
 // --- SHARED LAYOUT COMPONENT ---
 const ToolLayout: React.FC<{
@@ -10,21 +11,20 @@ const ToolLayout: React.FC<{
   loading: boolean;
   onGenerate: () => void;
   result: string | null;
+  helpSteps?: string[];
   children: React.ReactNode;
-}> = ({ title, desc, icon: Icon, loading, onGenerate, result, children }) => {
+}> = ({ title, desc, icon: Icon, loading, onGenerate, result, helpSteps = ["Preencha os dados.", "Clique em Gerar."], children }) => {
   return (
     <div className="h-[calc(100vh-8rem)] flex flex-col lg:flex-row gap-6">
       {/* Inputs */}
       <div className="w-full lg:w-1/3 flex flex-col gap-6 overflow-y-auto pr-2 custom-scrollbar">
-        <div>
-          <div className="flex items-center gap-3 mb-2">
-            <div className="p-2 bg-primary/10 rounded-lg">
-              <Icon className="w-6 h-6 text-primary" />
-            </div>
-            <h1 className="text-2xl font-bold text-white">{title}</h1>
-          </div>
-          <p className="text-slate-400 text-sm">{desc}</p>
-        </div>
+        
+        <ToolHeader 
+            title={title}
+            description={desc}
+            icon={Icon}
+            helpSteps={helpSteps}
+        />
         
         <div className="space-y-5">{children}</div>
 
@@ -100,7 +100,20 @@ Equipe de Suporte.`;
   };
 
   return (
-    <ToolLayout title="Email Marketing Pro" desc="Sequências de funil completas." icon={Mail} loading={loading} onGenerate={handleGen} result={result}>
+    <ToolLayout 
+        title="Email Marketing Pro" 
+        desc="Sequências de funil completas." 
+        icon={Mail} 
+        loading={loading} 
+        onGenerate={handleGen} 
+        result={result}
+        helpSteps={[
+            "Defina o objetivo (Ex: Recuperação de Carrinho, Boas-vindas).",
+            "Digite o nome do produto e desconto (opcional).",
+            "Escolha o tom de voz da mensagem.",
+            "Copie o HTML ou Texto gerado para sua ferramenta de email."
+        ]}
+    >
       <div>
         <label className="text-sm font-medium text-slate-300 block mb-2">Nome do Produto</label>
         <input value={product} onChange={e => setProduct(e.target.value)} className="w-full bg-surface border border-white/10 rounded-lg p-3 text-white focus:border-primary outline-none transition-colors" placeholder="Ex: Corretor Postural" />
@@ -146,7 +159,19 @@ export const SeoWriter = () => {
   };
 
   return (
-    <ToolLayout title="Artigos SEO" desc="Blog posts otimizados para o Google." icon={Search} loading={loading} onGenerate={handleGen} result={result}>
+    <ToolLayout 
+        title="Artigos SEO" 
+        desc="Blog posts otimizados para o Google." 
+        icon={Search} 
+        loading={loading} 
+        onGenerate={handleGen} 
+        result={result}
+        helpSteps={[
+            "Insira a Palavra-Chave principal que deseja ranquear.",
+            "Escolha o tom de voz do artigo.",
+            "A IA escreverá um artigo de 1000 palavras otimizado com tags H1, H2 e H3."
+        ]}
+    >
       <div>
         <label className="text-sm text-slate-300 block mb-2">Palavra-Chave Principal</label>
         <input value={keyword} onChange={e => setKeyword(e.target.value)} className="w-full bg-surface border border-white/10 rounded-lg p-3 text-white focus:border-primary outline-none" placeholder="Ex: Melhores tênis de corrida" />
