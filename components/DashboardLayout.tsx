@@ -2,16 +2,15 @@ import React, { useState, useEffect } from 'react';
 import Sidebar from './Sidebar';
 import { Menu, Zap } from 'lucide-react';
 
-// Components
-// IMPORTANTE: Apontando para a pasta dashboard para evitar ambiguidade
+// Core Dashboard Components
 import DashboardHome from './dashboard/DashboardHome';
 import AdGenerator from './dashboard/AdGenerator';
 import StudioProduct from './dashboard/StudioProduct';
 import Library from './dashboard/Library';
 import Settings from './dashboard/Settings';
-import ThemeSelector from './ThemeSelector'; 
+import ThemeSelector from './ThemeSelector'; // Correctly pointing to components/ThemeSelector.tsx
 
-// Tools
+// AI Tools
 import { EmailGenerator, SeoWriter, InfluencerFinder, PersonaGenerator, RoasCalculator } from './dashboard/Tools';
 
 interface DashboardLayoutProps {
@@ -24,12 +23,13 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ onBack, userData }) =
   const [isCollapsed, setIsCollapsed] = useState(false); // Desktop collapse
   const [activeTab, setActiveTab] = useState('overview');
 
-  // Background Controller Logic
+  // Background Controller: Adds a specific class when dashboard is active to adjust global styles if needed
   useEffect(() => {
     document.body.classList.add('dashboard-active');
     return () => document.body.classList.remove('dashboard-active');
   }, []);
 
+  // Router Switch
   const renderContent = () => {
     switch (activeTab) {
       case 'overview': return <DashboardHome onNavigate={setActiveTab} userData={userData} />;
@@ -48,7 +48,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ onBack, userData }) =
 
   return (
     <div className="min-h-screen bg-background text-slate-400 flex font-sans selection:bg-primary selection:text-white transition-colors duration-500">
-      {/* Sidebar */}
+      {/* Sidebar Navigation */}
       <Sidebar 
         isOpen={isSidebarOpen} 
         onClose={() => setIsSidebarOpen(false)} 
@@ -59,15 +59,15 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ onBack, userData }) =
         toggleCollapse={() => setIsCollapsed(!isCollapsed)}
       />
 
-      {/* Main Content Wrapper - Dynamic Margin based on Collapse State */}
+      {/* Main Content Wrapper */}
       <div 
         className={`flex-1 flex flex-col min-h-screen transition-all duration-300 ${isCollapsed ? 'md:ml-20' : 'md:ml-72'}`}
       >
         
-        {/* Header (Desktop & Mobile) */}
+        {/* Top Header */}
         <header className="h-16 bg-surface/80 backdrop-blur-md border-b border-white/5 flex items-center justify-between px-4 md:px-8 sticky top-0 z-30">
           
-          {/* Mobile Menu Toggle & Brand */}
+          {/* Mobile Menu Trigger */}
           <div className="flex items-center gap-3 md:hidden">
              <button 
                 onClick={() => setIsSidebarOpen(true)}
@@ -83,23 +83,21 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ onBack, userData }) =
              </div>
           </div>
 
-          {/* Desktop Left Spacer (Empty usually, or Breadcrumbs) */}
           <div className="hidden md:block">
-             {/* Future: Breadcrumbs here */}
+             {/* Spacer */}
           </div>
 
-          {/* Right Actions: Theme Selector & User Profile */}
+          {/* Right Actions */}
           <div className="flex items-center gap-4 ml-auto">
              <ThemeSelector />
              
-             {/* Simple User Avatar Placeholder */}
-             <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-primary/20 to-purple-500/20 border border-white/10 flex items-center justify-center text-xs font-bold text-primary">
+             <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-primary/20 to-purple-500/20 border border-white/10 flex items-center justify-center text-xs font-bold text-primary ring-2 ring-primary/10">
                  {userData?.user_metadata?.full_name?.[0] || 'U'}
              </div>
           </div>
         </header>
 
-        {/* Dashboard Content Area */}
+        {/* Content Area */}
         <main className="flex-1 p-4 md:p-8 relative overflow-y-auto overflow-x-hidden scroll-smooth">
           {renderContent()}
         </main>

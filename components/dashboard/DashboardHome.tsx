@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Megaphone, Camera, Zap, ArrowRight, TrendingUp, AlertCircle, Mail, UserCircle, Clock, Calendar } from 'lucide-react';
-// IMPORTANTE: Importando do diretório pai (components/)
-import ThemeSelector from '../ThemeSelector'; 
-import Link from 'next/link';
+import { Megaphone, Camera, Zap, TrendingUp, Clock, Calendar, Mail, UserCircle } from 'lucide-react';
+import ThemeSelector from '../ThemeSelector'; // Imports from parent components folder
 import { manageSubscriptionAction } from '../../lib/ai-actions';
 import { motion } from 'framer-motion';
 
@@ -41,17 +39,7 @@ const DashboardHome: React.FC<DashboardHomeProps> = ({ onNavigate, userData }) =
     }
   }, [userData]);
 
-  const handleManageSubscription = async () => {
-    const url = await manageSubscriptionAction(user?.id);
-    if (url.startsWith('http')) {
-        window.open(url, '_blank');
-    } else {
-        alert("Você está no plano Gratuito. Atualize para o Pro!");
-    }
-  };
-
   const firstName = user?.user_metadata?.full_name?.split(' ')[0] || "Hacker";
-  const avatarUrl = user?.user_metadata?.avatar_url;
 
   return (
     <div className="max-w-7xl mx-auto space-y-8 pb-12">
@@ -81,10 +69,6 @@ const DashboardHome: React.FC<DashboardHomeProps> = ({ onNavigate, userData }) =
           >
             <Calendar className="w-4 h-4" /> {currentDate}
           </motion.p>
-        </div>
-        
-        <div className="flex items-center gap-4">
-            <ThemeSelector />
         </div>
       </header>
 
