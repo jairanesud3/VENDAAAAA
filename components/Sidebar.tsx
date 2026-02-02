@@ -3,7 +3,7 @@ import {
   Zap, Home, Megaphone, Camera, 
   Mail, Users, FileText, Settings, LogOut,
   Calculator, UserCircle2, Library, CreditCard,
-  PanelLeftClose, PanelLeftOpen
+  PanelLeftClose, PanelLeftOpen, Wrench
 } from 'lucide-react';
 import Link from 'next/link';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -84,6 +84,7 @@ const Sidebar: React.FC<SidebarProps> = ({
              <MenuItem icon={Camera} label="Studio Product AI" active={activeTab === 'studio'} onClick={() => handleNav('studio')} collapsed={isCollapsed} />
              <MenuItem icon={Mail} label="Email Marketing" active={activeTab === 'email'} onClick={() => handleNav('email')} collapsed={isCollapsed} />
              <MenuItem icon={FileText} label="Artigos SEO" active={activeTab === 'seo'} onClick={() => handleNav('seo')} collapsed={isCollapsed} />
+             <MenuItem icon={Wrench} label="Utilitários (Novo)" active={activeTab === 'utilities'} onClick={() => handleNav('utilities')} collapsed={isCollapsed} />
           </MenuSection>
 
           <MenuSection title="ESTRATÉGIA" isCollapsed={isCollapsed}>

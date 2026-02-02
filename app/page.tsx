@@ -15,6 +15,7 @@ import Register from '../components/auth/Register';
 import Onboarding from '../components/auth/Onboarding';
 import Checkout from '../components/checkout/Checkout';
 import FloatingWidgets from '../components/FloatingWidgets';
+import { supabase } from '../lib/supabase';
 
 // Types for View State Management
 type ViewState = 'landing' | 'dashboard' | 'login' | 'register' | 'checkout' | 'onboarding';
@@ -22,6 +23,17 @@ type ViewState = 'landing' | 'dashboard' | 'login' | 'register' | 'checkout' | '
 export default function Home() {
   const [currentView, setCurrentView] = useState<ViewState>('landing');
   const [userData, setUserData] = useState<any>(null);
+
+  // Check Session on Load
+  useEffect(() => {
+    const checkSession = async () => {
+        const { data } = await supabase.auth.getUser();
+        if (data.user) {
+            handleAuthSuccess(data.user);
+        }
+    };
+    checkSession();
+  }, []);
 
   // Effect to handle navigation events from deep components (like Pricing cards)
   useEffect(() => {
@@ -39,22 +51,43 @@ export default function Home() {
     }
   }, []);
 
+  const handleAuthSuccess = (user: any) => {
+      setUserData(user);
+      
+      // CRITICAL CHECK: User MUST have onboarding_completed = true in metadata
+      // If metadata is missing or false, force Onboarding
+      const hasCompletedSetup = user.user_metadata?.onboarding_completed === true;
+
+      if (hasCompletedSetup) {
+          setCurrentView('dashboard');
+      } else {
+          setCurrentView('onboarding');
+      }
+  };
+
   // --- ROUTING LOGIC ---
 
   // 1. Dashboard View (Protected)
   if (currentView === 'dashboard') {
-    return <DashboardLayout userData={userData} onBack={() => setCurrentView('landing')} />;
+    return <DashboardLayout userData={userData} onBack={() => {
+        supabase.auth.signOut();
+        setCurrentView('landing');
+        setUserData(null);
+    }} />;
   }
 
   // 2. Onboarding Flow
   if (currentView === 'onboarding') {
     return (
       <Onboarding 
-        onComplete={(data) => {
-          setUserData(data);
+        onComplete={(updatedUser) => {
+          setUserData(updatedUser); // Update local state with new metadata
           setCurrentView('dashboard');
         }}
-        onBack={() => setCurrentView('landing')}
+        onBack={() => {
+            supabase.auth.signOut();
+            setCurrentView('landing');
+        }}
       />
     );
   }
@@ -63,15 +96,7 @@ export default function Home() {
   if (currentView === 'login') {
     return (
       <Login 
-        onLogin={(mockUser) => {
-            if (mockUser && mockUser.onboarding_completed) {
-                setUserData(mockUser);
-                setCurrentView('dashboard');
-            } else {
-                setUserData(mockUser);
-                setCurrentView('onboarding');
-            }
-        }} 
+        onLogin={handleAuthSuccess} 
         onRegisterClick={() => setCurrentView('register')}
         onBack={() => setCurrentView('landing')}
       />
@@ -82,7 +107,11 @@ export default function Home() {
   if (currentView === 'register') {
     return (
       <Register 
-        onRegister={() => setCurrentView('onboarding')} 
+        onRegister={() => {
+            // After register, we show a success message or auto-login logic inside Register component
+            // But usually Register leads to Onboarding if auto-confirmed
+            setCurrentView('onboarding');
+        }} 
         onLoginClick={() => setCurrentView('login')}
         onBack={() => setCurrentView('landing')}
       />
@@ -95,10 +124,10 @@ export default function Home() {
       <Checkout 
         onBack={() => setCurrentView('landing')}
         onSuccess={() => {
-            // Simulate successful purchase leading to dashboard
+            // Simulate successful purchase leading to dashboard (force onboard check even here in real app)
             setUserData({
                 id: 'paid_user',
-                user_metadata: { full_name: 'Cliente VIP', avatar_url: null }
+                user_metadata: { full_name: 'Cliente VIP', onboarding_completed: true }
             });
             setCurrentView('dashboard');
         }}

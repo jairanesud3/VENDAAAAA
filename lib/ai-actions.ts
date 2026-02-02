@@ -33,6 +33,78 @@ export async function generateAdCopyAction(productName: string, price: string, c
 }
 
 /**
+ * SMART TOOL ACTION (Handles 10+ different logic types)
+ */
+export async function generateSmartToolAction(toolId: string, inputData: string): Promise<string> {
+    let systemPrompt = "";
+
+    switch (toolId) {
+        case 'product_namer':
+            systemPrompt = `ATUE COMO: Especialista em Branding.
+            TAREFA: Crie 10 nomes de produtos criativos, curtos e memoráveis para o seguinte item/nicho.
+            ENTRADA: "${inputData}"
+            SAÍDA: Lista numerada com o nome e uma breve explicação do porquê funciona.`;
+            break;
+        case 'domain_gen':
+            systemPrompt = `ATUE COMO: Especialista em Domínios e SEO.
+            TAREFA: Sugira 10 nomes de domínio disponíveis (.com.br ou .com) para a loja. Devem ser curtos e fáceis de digitar.
+            ENTRADA: "${inputData}"
+            SAÍDA: Lista de domínios.`;
+            break;
+        case 'whatsapp_recovery':
+            systemPrompt = `ATUE COMO: Especialista em Conversão via WhatsApp.
+            TAREFA: Escreva 3 scripts de recuperação (1. Abordagem Amigável, 2. Oferta de Desconto, 3. Escassez/Urgência).
+            CONTEXTO: O cliente abandonou o carrinho ou gerou boleto do produto: "${inputData}".
+            ESTILO: Humano, casual (parecendo mensagem de amigo), curto, usar emojis.`;
+            break;
+        case 'review_reply':
+            systemPrompt = `ATUE COMO: Gestão de Crise e Customer Success.
+            TAREFA: Escreva uma resposta profissional e empática para esta avaliação de cliente.
+            AVALIAÇÃO DO CLIENTE: "${inputData}"
+            OBJETIVO: Resolver o problema, mostrar que se importa e reverter a má impressão (ou agradecer se for boa).`;
+            break;
+        case 'policy_gen':
+            systemPrompt = `ATUE COMO: Jurídico E-commerce.
+            TAREFA: Gere um texto padrão de "${inputData}" (ex: Privacidade, Trocas, Envio) para uma loja de Dropshipping no Brasil.
+            ESTILO: Formal, seguro, seguindo o Código de Defesa do Consumidor.`;
+            break;
+        case 'faq_gen':
+            systemPrompt = `ATUE COMO: Gerente de Loja.
+            TAREFA: Crie 5 Perguntas e Respostas Frequentes (FAQ) para quebrar objeções de compra deste produto.
+            PRODUTO: "${inputData}"
+            FOCO: Prazo de entrega, segurança, garantia, como usar.`;
+            break;
+        case 'product_desc':
+            systemPrompt = `ATUE COMO: Copywriter de Conversão.
+            TAREFA: Escreva uma descrição de produto completa para página de vendas (Shopify/Yampi).
+            ESTRUTURA: Headline Impactante -> Problema -> Solução (O Produto) -> Benefícios (Bullet points) -> Garantia.
+            PRODUTO: "${inputData}"`;
+            break;
+        case 'competitor_analysis':
+            systemPrompt = `ATUE COMO: Espião de Mercado.
+            TAREFA: Simule uma análise SWOT (Forças, Fraquezas, Oportunidades, Ameaças) baseada no nicho ou produto fornecido.
+            NICHO/PRODUTO: "${inputData}"
+            SAÍDA: Análise estratégica do que os concorrentes geralmente fazem errado e como superar.`;
+            break;
+        case 'hashtags':
+            systemPrompt = `ATUE COMO: Social Media Manager.
+            TAREFA: Gere 30 hashtags virais para TikTok e Instagram, misturando tags de nicho (pequenas) e tags globais (grandes).
+            TEMA: "${inputData}"`;
+            break;
+        case 'upsell':
+            systemPrompt = `ATUE COMO: Estrategista de Vendas.
+            TAREFA: Sugira 3 produtos complementares para fazer Upsell ou Order Bump para quem comprou o item abaixo. Explique a lógica de venda.
+            ITEM COMPRADO: "${inputData}"`;
+            break;
+        default:
+            systemPrompt = `Ajude com: ${inputData}`;
+    }
+
+    const fullPrompt = `${systemPrompt}\n\nResponda em Português do Brasil.`;
+    return await generateText(fullPrompt);
+}
+
+/**
  * CHAT SUPPORT AI (Specialized Persona)
  */
 export async function chatSupportAction(userMessage: string): Promise<string> {
@@ -68,7 +140,6 @@ export async function chatSupportAction(userMessage: string): Promise<string> {
 
 /**
  * GENERATE IMAGE (Direct Client Usage for Image Model)
- * Note: Keeps using gemini-2.5-flash-image for visuals as Flash Lite is text-optimized.
  */
 export async function generateImageAction(prompt: string): Promise<string> {
   const apiKey = process.env.API_KEY;

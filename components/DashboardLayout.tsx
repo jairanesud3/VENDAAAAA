@@ -8,7 +8,8 @@ import AdGenerator from './dashboard/AdGenerator';
 import StudioProduct from './dashboard/StudioProduct';
 import Library from './dashboard/Library';
 import Settings from './dashboard/Settings';
-import ThemeSelector from './ThemeSelector'; // Correctly pointing to components/ThemeSelector.tsx
+import ThemeSelector from './ThemeSelector'; 
+import ExtraTools from './dashboard/ExtraTools';
 
 // AI Tools
 import { EmailGenerator, SeoWriter, InfluencerFinder, PersonaGenerator, RoasCalculator } from './dashboard/Tools';
@@ -23,7 +24,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ onBack, userData }) =
   const [isCollapsed, setIsCollapsed] = useState(false); // Desktop collapse
   const [activeTab, setActiveTab] = useState('overview');
 
-  // Background Controller: Adds a specific class when dashboard is active to adjust global styles if needed
+  // Background Controller
   useEffect(() => {
     document.body.classList.add('dashboard-active');
     return () => document.body.classList.remove('dashboard-active');
@@ -38,6 +39,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ onBack, userData }) =
       case 'studio': return <StudioProduct />;
       case 'email': return <EmailGenerator />;
       case 'seo': return <SeoWriter />;
+      case 'utilities': return <ExtraTools />; // NEW 10 TOOLS
       case 'partners': return <InfluencerFinder />;
       case 'persona': return <PersonaGenerator />;
       case 'roas': return <RoasCalculator />;
