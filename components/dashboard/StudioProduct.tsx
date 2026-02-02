@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { UploadCloud, RefreshCw, Download, Share2, Edit, X, ImageIcon, Camera, Lock, Save, Loader2, Sparkles } from 'lucide-react';
+import { UploadCloud, RefreshCw, Download, Share2, X, ImageIcon, Camera, Lock, Save, Loader2, Sparkles, Sliders } from 'lucide-react';
 import { Toast } from '../ui/Toast';
 import { generateImageAction } from '../../lib/ai-actions';
 import ToolHeader from './ToolHeader';
@@ -8,9 +8,19 @@ import { supabase } from '../../lib/supabase';
 
 const MAX_IMAGE_CREDITS = 3;
 
+// Styles Presets
+const STYLES = [
+    { id: 'cinematic', name: 'Cinematográfico', prompt: 'cinematic lighting, dramatic shadows, movie still, color graded', color: 'bg-purple-500' },
+    { id: 'studio', name: 'Estúdio Clean', prompt: 'pure white background, soft box lighting, commercial photography, clean', color: 'bg-blue-500' },
+    { id: 'neon', name: 'Neon Cyber', prompt: 'cyberpunk neon lights, pink and blue glow, futuristic, dark background', color: 'bg-pink-500' },
+    { id: 'nature', name: 'Natureza', prompt: 'sunlight, outdoor, bokeh, leaves, wood texture, natural lighting', color: 'bg-green-500' },
+    { id: 'luxury', name: 'Luxo Dark', prompt: 'black marble background, golden accents, luxury vibe, elegant, sharp', color: 'bg-yellow-600' },
+];
+
 const StudioProduct: React.FC = () => {
   const [image, setImage] = useState<string | null>(null);
   const [prompt, setPrompt] = useState('');
+  const [selectedStyle, setSelectedStyle] = useState(STYLES[0]);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<string | null>(null);
   const [showToast, setShowToast] = useState(false);
@@ -44,7 +54,10 @@ const StudioProduct: React.FC = () => {
     setLoading(true);
     
     try {
-        const resultUrl = await generateImageAction(prompt || "Product photography");
+        // COMBINE USER PROMPT WITH STYLE
+        const finalPrompt = `${prompt}. Style: ${selectedStyle.prompt}`;
+        const resultUrl = await generateImageAction(finalPrompt);
+        
         setResult(resultUrl);
         setToastMessage("Imagem Ultra-HD gerada com sucesso!");
         setShowToast(true);
@@ -71,11 +84,11 @@ const StudioProduct: React.FC = () => {
             await supabase.from('saved_creations').insert({
                 user_id: user.id,
                 type: 'image',
-                title: `Studio Pro - ${prompt.substring(0, 20)}...`,
+                title: `Studio (${selectedStyle.name}) - ${prompt.substring(0, 15)}...`,
                 image_url: result,
                 created_at: new Date().toISOString()
             });
-            setToastMessage("Imagem salva na Biblioteca!");
+            setToastMessage("Salvo na Biblioteca!");
             setShowToast(true);
         }
     } catch (error) {
@@ -134,47 +147,29 @@ const StudioProduct: React.FC = () => {
       </AnimatePresence>
 
       {/* Left Panel: Inputs */}
-      <div className="w-full lg:w-1/3 flex flex-col gap-6 overflow-y-auto">
+      <div className="w-full lg:w-1/3 flex flex-col gap-6 overflow-y-auto pr-2 custom-scrollbar">
         
         <ToolHeader 
             title="Studio Pro Vision" 
-            description="Crie fotos comerciais ultra-realistas. Tecnologia Google Imagen 3 Pro." 
+            description="Crie fotos comerciais ultra-realistas com motor de renderização 8K." 
             icon={Camera}
             helpSteps={[
-                "Faça upload da foto do seu produto (opcional, para referência).",
-                "Descreva o cenário com detalhes (luz, fundo, clima).",
-                "A IA usará lentes virtuais 85mm para o melhor resultado."
+                "Faça upload da foto do seu produto (opcional).",
+                "Escolha um Estilo (Cinematográfico, Neon, etc).",
+                "Descreva o cenário e a IA fará o resto com qualidade de estúdio."
             ]}
         />
-
-        {/* Free Credit Counter */}
-        <div className="bg-white/5 border border-white/10 rounded-xl p-4 flex items-center justify-between">
-            <span className="text-sm font-bold text-slate-300">Créditos de Renderização</span>
-            <div className="flex items-center gap-2">
-                <div className="w-32 h-2 bg-black/50 rounded-full overflow-hidden">
-                    <motion.div 
-                        initial={{ width: 0 }}
-                        animate={{ width: `${(creditsUsed / MAX_IMAGE_CREDITS) * 100}%` }}
-                        className={`h-full ${creditsUsed >= MAX_IMAGE_CREDITS ? 'bg-red-500' : 'bg-pink-500'}`}
-                    />
-                </div>
-                <span className={`text-xs font-bold ${creditsUsed >= MAX_IMAGE_CREDITS ? 'text-red-500' : 'text-pink-500'}`}>
-                    {creditsUsed}/{MAX_IMAGE_CREDITS}
-                </span>
-            </div>
-        </div>
 
         {/* Upload Area */}
         <div className="border-2 border-dashed border-white/20 rounded-xl bg-[#0A0510] relative group hover:border-primary/50 transition-colors">
           {!image ? (
-            <label className="flex flex-col items-center justify-center h-48 cursor-pointer">
-              <UploadCloud className="w-10 h-10 text-slate-500 mb-3 group-hover:text-primary transition-colors" />
-              <span className="text-sm font-medium text-slate-400 group-hover:text-white">Upload de Referência (Opcional)</span>
-              <span className="text-xs text-slate-600 mt-1">A IA usará a composição da foto</span>
+            <label className="flex flex-col items-center justify-center h-40 cursor-pointer">
+              <UploadCloud className="w-8 h-8 text-slate-500 mb-2 group-hover:text-primary transition-colors" />
+              <span className="text-xs font-medium text-slate-400 group-hover:text-white">Upload de Referência (Opcional)</span>
               <input type="file" className="hidden" onChange={handleUpload} accept="image/*" />
             </label>
           ) : (
-            <div className="relative h-48 w-full">
+            <div className="relative h-40 w-full">
               <img src={image} alt="Preview" className="w-full h-full object-contain p-4" />
               <button 
                 onClick={() => setImage(null)}
@@ -186,14 +181,33 @@ const StudioProduct: React.FC = () => {
           )}
         </div>
 
+        {/* Style Selector */}
+        <div>
+            <label className="text-sm font-medium text-slate-300 mb-3 flex items-center gap-2">
+                <Sliders className="w-4 h-4" /> Estilo de Iluminação
+            </label>
+            <div className="grid grid-cols-2 gap-2">
+                {STYLES.map(style => (
+                    <button
+                        key={style.id}
+                        onClick={() => setSelectedStyle(style)}
+                        className={`p-3 rounded-xl border text-left text-xs font-bold transition-all flex items-center gap-2 ${selectedStyle.id === style.id ? 'bg-white/10 border-primary text-white shadow-lg' : 'bg-[#0A0510] border-white/10 text-slate-500 hover:text-white'}`}
+                    >
+                        <div className={`w-3 h-3 rounded-full ${style.color}`}></div>
+                        {style.name}
+                    </button>
+                ))}
+            </div>
+        </div>
+
         {/* Prompt Input */}
         <div className="flex-1">
-          <label className="block text-sm font-medium text-slate-300 mb-2">Prompt do Cenário (Seja detalhista)</label>
+          <label className="block text-sm font-medium text-slate-300 mb-2">Prompt do Cenário</label>
           <textarea 
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             className="w-full h-32 bg-[#0A0510] border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-primary transition-colors resize-none"
-            placeholder="Ex: Tênis esportivo flutuando, fundo neon cyberpunk, luz volumétrica azul e roxa, partículas de energia, renderização 8k..."
+            placeholder="Ex: Tênis flutuando, partículas de energia, fundo desfocado..."
           ></textarea>
         </div>
 
@@ -216,15 +230,15 @@ const StudioProduct: React.FC = () => {
                     <ImageIcon className="w-10 h-10 text-slate-600" />
                 </div>
                 <h3 className="text-white font-bold text-lg mb-2">Estúdio Virtual Pronto</h3>
-                <p className="text-slate-500 font-medium max-w-sm mx-auto">Descreva seu produto e cenário. Nossa IA simula uma sessão de fotos de R$ 5.000,00.</p>
+                <p className="text-slate-500 font-medium max-w-sm mx-auto">Selecione o estilo e descreva o cenário. Nossa IA simula uma sessão de fotos de R$ 5.000,00.</p>
             </div>
         )}
 
         {loading && (
             <div className="text-center">
                 <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                <p className="text-primary font-bold animate-pulse text-lg">Renderizando Pixels...</p>
-                <p className="text-xs text-slate-500 mt-2">Aplicando texturas, luz e sombras (Gemini Vision)</p>
+                <p className="text-primary font-bold animate-pulse text-lg">Renderizando 8K...</p>
+                <p className="text-xs text-slate-500 mt-2">Aplicando texturas, luz e sombras (Gemini Pro Vision)</p>
             </div>
         )}
 

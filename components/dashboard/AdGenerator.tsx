@@ -6,6 +6,7 @@ import { cleanAIResponse } from '../../lib/utils';
 import ToolHeader from './ToolHeader';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../../lib/supabase';
+import { SmartText } from '../ui/SmartText';
 
 const MAX_FREE_CREDITS = 10;
 
@@ -81,7 +82,8 @@ const AdGenerator: React.FC = () => {
       const context = `${channelType.toUpperCase()}_${selectedChannels[0] || 'GENERIC'}`;
       const result = await generateAdCopyAction(productName, price, context);
       
-      setGeneratedText(cleanAIResponse(result)); 
+      // Do not clean aggressively, keep format for SmartText
+      setGeneratedText(result); 
       if (selectedChannels.length > 0) setActiveTab(selectedChannels[0]);
 
       const newCount = creditsUsed + 1;
@@ -189,9 +191,6 @@ const AdGenerator: React.FC = () => {
             ]}
         />
         
-        {/* ... Inputs existing code ... */}
-        {/* Mantendo o código existente dos inputs para economizar espaço na resposta, mas assumindo que ele está aqui */}
-        
         <div className="space-y-5 bg-[#0A0510] border border-white/5 p-6 rounded-2xl">
             <div>
                 <label className="block text-sm font-bold text-slate-300 mb-2">Nome do Produto</label>
@@ -217,7 +216,11 @@ const AdGenerator: React.FC = () => {
 
          {/* Channel Selector Logic */}
          <div className="bg-[#0A0510] border border-white/5 p-6 rounded-2xl">
-             {/* ... Platform grid code ... */}
+             <div className="flex justify-between items-center mb-4">
+                <label className="block text-sm font-bold text-slate-300">
+                    {channelType === 'social' ? 'Redes Selecionadas' : 'Marketplaces Alvo'}
+                </label>
+             </div>
             <div className="grid grid-cols-2 gap-3">
                 {currentPlatforms.map((s) => (
                     <motion.div
@@ -326,10 +329,9 @@ const AdGenerator: React.FC = () => {
                                 </div>
                             </div>
                             
-                            <div className="flex-1 bg-black/40 border border-white/10 rounded-xl p-6 text-slate-300 text-sm font-sans leading-7 selection:bg-primary/30 shadow-inner overflow-y-auto">
-                                <div className="whitespace-pre-wrap">
-                                    {generatedText}
-                                </div>
+                            <div className="flex-1 bg-black/40 border border-white/10 rounded-xl p-6 shadow-inner overflow-y-auto">
+                                {/* Use SmartText Renderer */}
+                                <SmartText content={generatedText || ''} />
                             </div>
                         </div>
                    )}

@@ -10,40 +10,51 @@
   --foreground: 255 255 255;
 }
 
-body {
-  /* Deep Radial Gradient Background matching the V2.5 design */
+html {
+  height: 100%;
+  width: 100%;
   background-color: #05010D;
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  overflow-x: hidden;
+  background-color: #05010D;
+  background-image: radial-gradient(circle at 50% -20%, #2e1065 0%, #05010D 50%, #020005 100%);
+  background-attachment: fixed; 
+  background-size: cover;
+  background-repeat: no-repeat;
   color: white;
   font-family: 'Plus Jakarta Sans', sans-serif;
-  overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   
-  /* ESCALA DE 80% SOLICITADA PELO USUÁRIO */
+  /* ESCALA DE 80% SOLICITADA */
   zoom: 80%; 
 }
 
-/* --- LIVING BACKGROUND ANIMATIONS --- */
+/* --- LIVING BACKGROUND ANIMATIONS (FIXED POSITION) --- */
 .living-bg {
     position: fixed;
-    top: 0;
-    left: 0;
+    inset: 0; /* Top, Right, Bottom, Left = 0 */
     width: 100vw;
     height: 100vh;
-    z-index: -50; /* Garante que fique atrás de tudo */
+    z-index: -50;
     pointer-events: none;
+    overflow: hidden;
     background: radial-gradient(circle at 50% -20%, #2e1065 0%, #05010D 50%, #020005 100%);
-    background-attachment: fixed; /* Fixa o gradiente */
 }
 
 .orb-1, .orb-2 {
-    position: fixed; /* Mudado para fixed para não scrollar junto */
+    position: absolute;
     border-radius: 50%;
     filter: blur(80px);
     opacity: 0.4;
     animation-timing-function: ease-in-out;
     animation-iteration-count: infinite;
-    z-index: -49;
 }
 
 .orb-1 {
@@ -113,4 +124,11 @@ body {
 @keyframes electricPulse {
   0% { background-position: 0% 50%; }
   100% { background-position: 100% 50%; }
+}
+
+/* Security Blurs */
+.security-blur {
+    filter: blur(5px);
+    pointer-events: none;
+    user-select: none;
 }

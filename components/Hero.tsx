@@ -1,5 +1,5 @@
 import React from 'react';
-import { Zap, Sparkles } from 'lucide-react';
+import { Zap, Sparkles, PlayCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface HeroProps {
@@ -21,7 +21,7 @@ const Hero: React.FC<HeroProps> = ({ onNavigate }) => {
       >
         <Sparkles className="w-3.5 h-3.5 text-purple-300" />
         <span className="text-xs font-bold text-purple-200 tracking-wide uppercase">
-          Nova IA V.2.5 Liberada
+          Nova IA V.4.0 Liberada
         </span>
       </motion.div>
 
@@ -30,7 +30,7 @@ const Hero: React.FC<HeroProps> = ({ onNavigate }) => {
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
-        className="text-6xl md:text-8xl font-extrabold tracking-tighter mb-4 leading-[1] md:leading-[1.1] relative z-10 font-sans"
+        className="text-5xl md:text-7xl lg:text-8xl font-extrabold tracking-tighter mb-4 leading-[1.1] relative z-10 font-sans"
       >
         <span className="block text-white drop-shadow-2xl">Transforme Produtos</span>
         <span className="block text-[#34D399] drop-shadow-[0_0_35px_rgba(52,211,153,0.5)]">
@@ -43,9 +43,9 @@ const Hero: React.FC<HeroProps> = ({ onNavigate }) => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
-        className="text-4xl md:text-6xl font-bold mb-8 text-[#EC4899] drop-shadow-[0_0_25px_rgba(236,72,153,0.4)] tracking-tight"
+        className="text-3xl md:text-5xl lg:text-6xl font-bold mb-8 text-[#EC4899] drop-shadow-[0_0_25px_rgba(236,72,153,0.4)] tracking-tight"
       >
-        Anúncios Virais em 30s.
+        Anúncios Virais em 30 Segundos.
       </motion.h2>
 
       {/* Descrição */}
@@ -78,6 +78,7 @@ const Hero: React.FC<HeroProps> = ({ onNavigate }) => {
             onClick={onNavigate}
             className="px-8 py-5 rounded-2xl border border-white/10 text-white font-bold hover:bg-white/5 hover:border-white/30 transition-all flex items-center gap-3 text-lg backdrop-blur-sm"
          >
+            <PlayCircle className="w-5 h-5" />
             Ver Demo em Vídeo
          </button>
       </motion.div>

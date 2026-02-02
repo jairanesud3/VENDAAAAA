@@ -111,20 +111,27 @@ export const EmailGenerator = () => {
       <div>
         <label className="text-sm font-medium text-slate-300 block mb-2">Tipo de Sequência</label>
         <select value={type} onChange={e => setType(e.target.value)} className="w-full bg-surface border border-white/10 rounded-lg p-3 text-white focus:border-primary outline-none">
-          <option value="abandoned_cart">Recuperação de Carrinho</option>
-          <option value="boleto">Recuperação de Boleto</option>
-          <option value="welcome">Boas-vindas (Onboarding)</option>
-          <option value="launch">Lançamento / Promoção</option>
-          <option value="post_purchase">Pós-venda e Upsell</option>
+          <option value="abandoned_cart">Recuperação de Carrinho (3 Emails)</option>
+          <option value="boleto">Recuperação de Boleto/Pix (Urgência)</option>
+          <option value="welcome">Boas-vindas / Onboarding</option>
+          <option value="launch">Lançamento de Produto (Aquecimento)</option>
+          <option value="flash_sale">Oferta Relâmpago (Flash Sale)</option>
+          <option value="post_purchase">Pós-venda (Pedido de Review)</option>
+          <option value="upsell">Upsell / Cross-sell</option>
+          <option value="newsletter">Newsletter Conteúdo + Venda</option>
+          <option value="winback">Reativação de Cliente Inativo</option>
         </select>
       </div>
       <div>
         <label className="text-sm font-medium text-slate-300 block mb-2">Tom de Voz</label>
         <select value={tone} onChange={e => setTone(e.target.value)} className="w-full bg-surface border border-white/10 rounded-lg p-3 text-white focus:border-primary outline-none">
           <option value="persuasive">Persuasivo (Gatilhos Mentais)</option>
-          <option value="urgent">Urgente / Escassez</option>
-          <option value="friendly">Amigável / Relacionamento</option>
-          <option value="professional">Profissional / Autoridade</option>
+          <option value="urgent">Urgente / Escassez (Agressivo)</option>
+          <option value="friendly">Amigável / Relacionamento (Soft)</option>
+          <option value="professional">Profissional / Autoridade (B2B)</option>
+          <option value="storytelling">Storytelling (Emocional)</option>
+          <option value="humorous">Bem-humorado / Descontraído</option>
+          <option value="luxury">Luxuoso / Exclusivo</option>
         </select>
       </div>
     </ToolLayout>
@@ -202,14 +209,19 @@ export const InfluencerFinder = () => {
           <option value="instagram">Instagram</option>
           <option value="tiktok">TikTok</option>
           <option value="youtube">YouTube</option>
+          <option value="pinterest">Pinterest</option>
+          <option value="twitter">Twitter (X)</option>
+          <option value="linkedin">LinkedIn</option>
+          <option value="twitch">Twitch</option>
         </select>
       </div>
       <div>
         <label className="text-sm font-medium text-slate-300 block mb-2">Tamanho (Seguidores)</label>
         <select value={size} onChange={e => setSize(e.target.value)} className="w-full bg-surface border border-white/10 rounded-lg p-3 text-white focus:border-primary outline-none">
-          <option value="nano">Nano (1k - 10k)</option>
-          <option value="micro">Micro (10k - 100k)</option>
-          <option value="macro">Macro (100k+)</option>
+          <option value="nano">Nano (1k - 10k) - Alta Confiança</option>
+          <option value="micro">Micro (10k - 100k) - Engajamento</option>
+          <option value="macro">Macro (100k - 500k) - Alcance</option>
+          <option value="mega">Mega (500k+) - Branding Massivo</option>
         </select>
       </div>
     </ToolLayout>

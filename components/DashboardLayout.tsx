@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Sidebar from './Sidebar';
 import { Menu, Zap } from 'lucide-react';
+import SecurityGuard from './SecurityGuard'; // IMPORTED
 
 // Core Dashboard Components
 import DashboardHome from './dashboard/DashboardHome';
@@ -10,8 +11,8 @@ import Library from './dashboard/Library';
 import Settings from './dashboard/Settings';
 import ThemeSelector from './ThemeSelector'; 
 import ExtraTools from './dashboard/ExtraTools';
-import LandingPageGenerator from './dashboard/LandingPageGenerator'; // NEW
-import Translator from './dashboard/Translator'; // NEW
+import LandingPageGenerator from './dashboard/LandingPageGenerator';
+import Translator from './dashboard/Translator';
 
 // AI Tools
 import { EmailGenerator, SeoWriter, InfluencerFinder, PersonaGenerator, RoasCalculator } from './dashboard/Tools';
@@ -22,19 +23,16 @@ interface DashboardLayoutProps {
 }
 
 const DashboardLayout: React.FC<DashboardLayoutProps> = ({ onBack, userData }) => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // Mobile toggle
-  const [isCollapsed, setIsCollapsed] = useState(false); // Desktop collapse
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');
 
-  // Background Controller
   useEffect(() => {
     document.body.classList.add('dashboard-active');
     return () => document.body.classList.remove('dashboard-active');
   }, []);
 
-  // Router Switch
   const renderContent = () => {
-    // Check if it is a specific utility tool (e.g., utilities-product_namer)
     if (activeTab.startsWith('utilities-')) {
         const toolId = activeTab.replace('utilities-', '');
         return <ExtraTools initialToolId={toolId} onBack={() => setActiveTab('utilities')} />;
@@ -45,8 +43,8 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ onBack, userData }) =
       case 'library': return <Library />;
       case 'ads': return <AdGenerator />;
       case 'studio': return <StudioProduct />;
-      case 'landing': return <LandingPageGenerator />; // NEW
-      case 'translator': return <Translator />; // NEW
+      case 'landing': return <LandingPageGenerator />;
+      case 'translator': return <Translator />;
       case 'email': return <EmailGenerator />;
       case 'seo': return <SeoWriter />;
       case 'utilities': return <ExtraTools />; 
@@ -60,6 +58,8 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ onBack, userData }) =
 
   return (
     <div className="min-h-screen bg-background text-slate-400 flex font-sans selection:bg-primary selection:text-white transition-colors duration-500">
+      <SecurityGuard /> {/* MOUNTED HERE */}
+      
       {/* Sidebar Navigation */}
       <Sidebar 
         isOpen={isSidebarOpen} 

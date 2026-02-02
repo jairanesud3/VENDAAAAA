@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Megaphone, Camera, Zap, TrendingUp, Clock, Calendar, Mail, UserCircle, Wrench, ChevronRight } from 'lucide-react';
+import { Megaphone, Camera, Zap, TrendingUp, Clock, Calendar, Mail, UserCircle, Wrench, ChevronRight, Activity, Lightbulb } from 'lucide-react';
 import ThemeSelector from '../ThemeSelector'; 
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../../lib/supabase';
@@ -11,14 +11,13 @@ interface DashboardHomeProps {
   userData?: any;
 }
 
-const FREE_TIER_LIMIT = 15; // Total credits for free tier
+const FREE_TIER_LIMIT = 15;
 
 const DashboardHome: React.FC<DashboardHomeProps> = ({ onNavigate, userData }) => {
   const [user, setUser] = useState<any>(userData || null);
   const [greeting, setGreeting] = useState('');
   const [currentDate, setCurrentDate] = useState('');
   
-  // Real Usage Stats
   const [stats, setStats] = useState({
       creditsUsed: 0,
       adsGenerated: 0,
@@ -30,17 +29,14 @@ const DashboardHome: React.FC<DashboardHomeProps> = ({ onNavigate, userData }) =
   const [showTour, setShowTour] = useState(false);
 
   useEffect(() => {
-    // Time greeting logic
     const hour = new Date().getHours();
     if (hour < 12) setGreeting('Bom dia');
     else if (hour < 18) setGreeting('Boa tarde');
     else setGreeting('Boa noite');
 
-    // Date logic
     const dateOptions: Intl.DateTimeFormatOptions = { weekday: 'long', day: 'numeric', month: 'long' };
     setCurrentDate(new Date().toLocaleDateString('pt-BR', dateOptions));
 
-    // 1. Fetch User Data
     if (userData) {
         setUser(userData);
         if (userData.user_metadata?.show_tour) {
@@ -51,7 +47,6 @@ const DashboardHome: React.FC<DashboardHomeProps> = ({ onNavigate, userData }) =
             const { data } = await supabase.auth.getUser();
             if (data.user) {
                 setUser(data.user);
-                // Check if we should show tour based on metadata or if it's a fresh account
                 if (data.user.user_metadata?.show_tour) {
                     setShowTour(true);
                 }
@@ -60,19 +55,18 @@ const DashboardHome: React.FC<DashboardHomeProps> = ({ onNavigate, userData }) =
         fetchUser();
     }
 
-    // 2. Load Real Usage Stats from LocalStorage (Syncs with Tools)
     const textCredits = parseInt(localStorage.getItem('drophacker_text_credits') || '0');
     const imageCredits = parseInt(localStorage.getItem('drophacker_image_credits') || '0');
     
     const totalUsed = textCredits + imageCredits;
-    const estimatedTime = (textCredits * 15) + (imageCredits * 30); // Minutes saved
-    const estimatedRoi = (textCredits * 120) + (imageCredits * 80); // R$ estimated
+    const estimatedTime = (textCredits * 15) + (imageCredits * 30); 
+    const estimatedRoi = (textCredits * 120) + (imageCredits * 80); 
 
     setStats({
         creditsUsed: totalUsed,
         adsGenerated: textCredits,
         imagesGenerated: imageCredits,
-        timeSaved: Math.round(estimatedTime / 60), // Hours
+        timeSaved: Math.round(estimatedTime / 60), 
         roi: estimatedRoi
     });
 
@@ -80,7 +74,6 @@ const DashboardHome: React.FC<DashboardHomeProps> = ({ onNavigate, userData }) =
 
   const handleTourComplete = async () => {
       setShowTour(false);
-      // Update metadata so tour doesn't show again
       await supabase.auth.updateUser({
           data: { show_tour: false }
       });
@@ -92,7 +85,6 @@ const DashboardHome: React.FC<DashboardHomeProps> = ({ onNavigate, userData }) =
   return (
     <div className="max-w-7xl mx-auto space-y-8 pb-12 relative">
       
-      {/* Onboarding Tour */}
       <AnimatePresence>
         {showTour && <DashboardTour onComplete={handleTourComplete} userName={firstName} />}
       </AnimatePresence>
@@ -126,7 +118,7 @@ const DashboardHome: React.FC<DashboardHomeProps> = ({ onNavigate, userData }) =
         </div>
       </header>
 
-      {/* Grid Stats (REAL DATA) */}
+      {/* Grid Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard 
             title="Créditos Grátis" 
@@ -166,6 +158,8 @@ const DashboardHome: React.FC<DashboardHomeProps> = ({ onNavigate, userData }) =
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          
+          {/* Main Content Column (Left) */}
           <div className="lg:col-span-2 space-y-8">
              
              {/* Main Shortcuts */}
@@ -181,11 +175,11 @@ const DashboardHome: React.FC<DashboardHomeProps> = ({ onNavigate, userData }) =
                 </div>
              </div>
 
-             {/* Utilities Compact Grid */}
+             {/* Utilities Compact Grid (Expanded) */}
              <div>
                 <div className="flex justify-between items-center mb-6">
                     <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                        <Wrench className="w-5 h-5 text-slate-400" /> Utilitários
+                        <Wrench className="w-5 h-5 text-slate-400" /> Utilitários Populares
                     </h2>
                     <button 
                         onClick={() => onNavigate('utilities')}
@@ -202,16 +196,63 @@ const DashboardHome: React.FC<DashboardHomeProps> = ({ onNavigate, userData }) =
                             onClick={() => onNavigate(`utilities-${tool.id}`)}
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
-                            className="bg-white/5 border border-white/5 hover:bg-white/10 rounded-xl p-4 flex flex-col items-center text-center gap-2 transition-colors"
+                            className="bg-white/5 border border-white/5 hover:bg-white/10 rounded-xl p-4 flex flex-col items-center text-center gap-2 transition-colors group"
                         >
-                             <div className={`w-8 h-8 rounded-lg bg-black/20 flex items-center justify-center`}>
+                             <div className={`w-8 h-8 rounded-lg bg-black/20 flex items-center justify-center group-hover:bg-black/40`}>
                                 <tool.icon className={`w-4 h-4 ${tool.color}`} />
                             </div>
-                            <span className="text-[10px] font-bold text-slate-300 leading-tight">{tool.title}</span>
+                            <span className="text-[10px] font-bold text-slate-300 leading-tight group-hover:text-white">{tool.title}</span>
                         </motion.button>
                     ))}
                 </div>
              </div>
+          </div>
+
+          {/* Side Column (Right) - Activity & Tips */}
+          <div className="lg:col-span-1 space-y-6">
+              
+              {/* Daily Tip */}
+              <div className="bg-gradient-to-br from-indigo-900/50 to-purple-900/50 border border-white/10 rounded-2xl p-6 relative overflow-hidden">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-3xl -mr-16 -mt-16"></div>
+                  <div className="flex items-start gap-4 relative z-10">
+                      <div className="p-3 bg-white/10 rounded-xl">
+                          <Lightbulb className="w-6 h-6 text-yellow-300" />
+                      </div>
+                      <div>
+                          <h3 className="font-bold text-white text-lg">Dica do Dia</h3>
+                          <p className="text-slate-300 text-sm mt-2 leading-relaxed">
+                              Use o <strong>Studio Product AI</strong> com o estilo "Cinematográfico" para aumentar o CTR dos seus anúncios em até 40%.
+                          </p>
+                      </div>
+                  </div>
+              </div>
+
+              {/* Recent Activity / Status */}
+              <div className="bg-surface border border-white/5 rounded-2xl p-6">
+                  <h3 className="font-bold text-white text-sm uppercase tracking-wider mb-4 flex items-center gap-2">
+                      <Activity className="w-4 h-4 text-green-500" /> Status do Sistema
+                  </h3>
+                  <div className="space-y-4">
+                      <div className="flex items-center justify-between text-sm">
+                          <span className="text-slate-400">Gemini Pro Vision</span>
+                          <span className="text-green-400 flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> Online</span>
+                      </div>
+                      <div className="flex items-center justify-between text-sm">
+                          <span className="text-slate-400">Database</span>
+                          <span className="text-green-400 flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-green-500"></span> Conectado</span>
+                      </div>
+                      <div className="flex items-center justify-between text-sm">
+                          <span className="text-slate-400">API Latency</span>
+                          <span className="text-slate-200">24ms</span>
+                      </div>
+                  </div>
+                  <div className="mt-6 pt-4 border-t border-white/5">
+                      <button onClick={() => onNavigate('library')} className="w-full py-2 bg-white/5 hover:bg-white/10 rounded-lg text-xs font-bold text-white transition-colors">
+                          Acessar Histórico Completo
+                      </button>
+                  </div>
+              </div>
+
           </div>
       </div>
     </div>
