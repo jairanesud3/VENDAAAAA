@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 :root {
-  /* Default Theme: Roxo Neon (Purple) - Defined explicitly for immediate load */
+  /* Default Theme: Roxo Neon (Purple) */
   --color-primary: 168 85 247;      /* #A855F7 */
   --color-primary-dark: 126 34 206; /* #7E22CE */
   --background: 5 1 13;             /* #05010D */
@@ -11,18 +11,21 @@
 }
 
 body {
-  background-color: #05010D; /* Force dark background immediately */
+  background-color: #05010D;
   color: white;
-  font-family: 'Plus Jakarta Sans', sans-serif; /* Force font */
+  font-family: 'Plus Jakarta Sans', sans-serif;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  
+  /* ESCALA DE 80% SOLICITADA PELO USUÁRIO */
+  zoom: 80%; 
 }
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
   background: #020105; 
@@ -82,4 +85,13 @@ body {
   0% { transform: translate(0, 0) scale(1); }
   50% { transform: translate(50px, -50px) scale(1.1); }
   100% { transform: translate(-50px, 50px) scale(1); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(168, 85, 247, 0.2); }
+  50% { box-shadow: 0 0 40px rgba(168, 85, 247, 0.6); }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 3s infinite;
 }

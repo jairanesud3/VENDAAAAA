@@ -1,8 +1,11 @@
-import React, { useState } from 'react';
-import { UploadCloud, RefreshCw, Download, Share2, Edit, X, ImageIcon, Camera } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { UploadCloud, RefreshCw, Download, Share2, Edit, X, ImageIcon, Camera, Lock } from 'lucide-react';
 import { Toast } from '../ui/Toast';
 import { generateImageAction } from '../../lib/ai-actions';
 import ToolHeader from './ToolHeader';
+import { motion, AnimatePresence } from 'framer-motion';
+
+const MAX_IMAGE_CREDITS = 3;
 
 const StudioProduct: React.FC = () => {
   const [image, setImage] = useState<string | null>(null);
@@ -10,6 +13,15 @@ const StudioProduct: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<string | null>(null);
   const [showToast, setShowToast] = useState(false);
+
+  // Usage Logic
+  const [creditsUsed, setCreditsUsed] = useState(0);
+  const [showLimitModal, setShowLimitModal] = useState(false);
+
+  useEffect(() => {
+    const stored = localStorage.getItem('drophacker_image_credits');
+    if (stored) setCreditsUsed(parseInt(stored));
+  }, []);
 
   const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -20,12 +32,23 @@ const StudioProduct: React.FC = () => {
 
   const handleGenerate = async () => {
     if (!prompt && !image) return;
+
+    if (creditsUsed >= MAX_IMAGE_CREDITS) {
+        setShowLimitModal(true);
+        return;
+    }
+
     setLoading(true);
     
     try {
         const resultUrl = await generateImageAction(prompt || "Product photography");
         setResult(resultUrl);
         setShowToast(true);
+
+        const newCount = creditsUsed + 1;
+        setCreditsUsed(newCount);
+        localStorage.setItem('drophacker_image_credits', newCount.toString());
+
     } catch (e) {
         console.error(e);
     } finally {
@@ -33,9 +56,51 @@ const StudioProduct: React.FC = () => {
     }
   };
 
+  const navigateToSubscription = () => {
+    if (typeof window !== 'undefined') {
+        const event = new CustomEvent('navigate-checkout');
+        window.dispatchEvent(event);
+    }
+  };
+
   return (
-    <div className="h-[calc(100vh-8rem)] flex flex-col lg:flex-row gap-6">
+    <div className="h-[calc(100vh-8rem)] flex flex-col lg:flex-row gap-6 relative">
       <Toast message="Imagem gerada com sucesso!" isVisible={showToast} onClose={() => setShowToast(false)} />
+
+       {/* LIMIT MODAL */}
+       <AnimatePresence>
+        {showLimitModal && (
+            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+                <motion.div 
+                    initial={{ scale: 0.9, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={{ scale: 0.9, opacity: 0 }}
+                    className="bg-[#0F0518] border border-primary/50 rounded-2xl p-8 max-w-md w-full shadow-[0_0_50px_rgba(168,85,247,0.3)] text-center relative overflow-hidden"
+                >
+                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-purple-600"></div>
+                    <div className="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center mx-auto mb-6">
+                        <Lock className="w-8 h-8 text-primary" />
+                    </div>
+                    <h2 className="text-2xl font-bold text-white mb-2">Limite de Imagens Atingido</h2>
+                    <p className="text-slate-400 mb-8">
+                        Você utilizou seus {MAX_IMAGE_CREDITS} créditos de imagens de estúdio. A geração de imagens 4K consome muitos recursos. Assine para liberar.
+                    </p>
+                    <button 
+                        onClick={navigateToSubscription}
+                        className="w-full py-4 bg-gradient-to-r from-primary to-purple-600 text-white font-bold rounded-xl shadow-lg hover:shadow-primary/50 hover:scale-105 transition-all mb-4"
+                    >
+                        Desbloquear Imagens Ilimitadas
+                    </button>
+                    <button 
+                        onClick={() => setShowLimitModal(false)}
+                        className="text-sm text-slate-500 hover:text-white"
+                    >
+                        Voltar
+                    </button>
+                </motion.div>
+            </div>
+        )}
+      </AnimatePresence>
 
       {/* Left Panel: Inputs */}
       <div className="w-full lg:w-1/3 flex flex-col gap-6 overflow-y-auto">
@@ -50,6 +115,23 @@ const StudioProduct: React.FC = () => {
                 "Clique em 'Transformar Produto' e aguarde a renderização."
             ]}
         />
+
+        {/* Free Credit Counter */}
+        <div className="bg-white/5 border border-white/10 rounded-xl p-4 flex items-center justify-between">
+            <span className="text-sm font-bold text-slate-300">Créditos Imagem</span>
+            <div className="flex items-center gap-2">
+                <div className="w-32 h-2 bg-black/50 rounded-full overflow-hidden">
+                    <motion.div 
+                        initial={{ width: 0 }}
+                        animate={{ width: `${(creditsUsed / MAX_IMAGE_CREDITS) * 100}%` }}
+                        className={`h-full ${creditsUsed >= MAX_IMAGE_CREDITS ? 'bg-red-500' : 'bg-pink-500'}`}
+                    />
+                </div>
+                <span className={`text-xs font-bold ${creditsUsed >= MAX_IMAGE_CREDITS ? 'text-red-500' : 'text-pink-500'}`}>
+                    {creditsUsed}/{MAX_IMAGE_CREDITS}
+                </span>
+            </div>
+        </div>
 
         {/* Upload Area */}
         <div className="border-2 border-dashed border-white/20 rounded-xl bg-[#0A0510] relative group hover:border-primary/50 transition-colors">

@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
-import { Copy, Instagram, Facebook, Zap, Loader2, Twitter, Linkedin, Pin, Megaphone, Check, ShoppingBag, ShoppingBasket, Box, Shirt, Repeat, ExternalLink } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Copy, Instagram, Facebook, Zap, Loader2, Twitter, Linkedin, Pin, Megaphone, Check, ShoppingBag, ShoppingBasket, Box, Shirt, Repeat, ExternalLink, Lock } from 'lucide-react';
 import { Toast } from '../ui/Toast';
 import { generateAdCopyAction } from '../../lib/ai-actions';
 import ToolHeader from './ToolHeader';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+
+const MAX_FREE_CREDITS = 10;
 
 const AdGenerator: React.FC = () => {
   const [channelType, setChannelType] = useState<'social' | 'marketplace'>('social');
@@ -14,8 +16,17 @@ const AdGenerator: React.FC = () => {
   const [generatedText, setGeneratedText] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState('instagram');
   const [showToast, setShowToast] = useState(false);
+  
+  // Usage Logic
+  const [creditsUsed, setCreditsUsed] = useState(0);
+  const [showLimitModal, setShowLimitModal] = useState(false);
 
-  // Platform Configurations (Updated with URLs)
+  useEffect(() => {
+    const stored = localStorage.getItem('drophacker_text_credits');
+    if (stored) setCreditsUsed(parseInt(stored));
+  }, []);
+
+  // Platform Configurations
   const socialPlatforms = [
     { id: 'instagram', icon: Instagram, label: 'Instagram', color: 'text-pink-500', bg: 'hover:bg-pink-500/10', url: 'https://www.instagram.com' },
     { id: 'facebook', icon: Facebook, label: 'Facebook', color: 'text-blue-500', bg: 'hover:bg-blue-500/10', url: 'https://business.facebook.com' },
@@ -53,6 +64,12 @@ const AdGenerator: React.FC = () => {
 
   const handleGenerate = async () => {
     if (!productName) return;
+
+    // Check Limit
+    if (creditsUsed >= MAX_FREE_CREDITS) {
+        setShowLimitModal(true);
+        return;
+    }
     
     setLoading(true);
     setGeneratedText(null);
@@ -63,6 +80,12 @@ const AdGenerator: React.FC = () => {
       
       setGeneratedText(result);
       if (selectedChannels.length > 0) setActiveTab(selectedChannels[0]);
+
+      // Increment Usage
+      const newCount = creditsUsed + 1;
+      setCreditsUsed(newCount);
+      localStorage.setItem('drophacker_text_credits', newCount.toString());
+
     } catch (error) {
       console.error(error);
       setGeneratedText("Erro ao conectar com a IA. Tente novamente.");
@@ -78,9 +101,52 @@ const AdGenerator: React.FC = () => {
       }
   };
 
+  const navigateToSubscription = () => {
+      // Dispatch event for parent to handle nav
+      if (typeof window !== 'undefined') {
+          const event = new CustomEvent('navigate-checkout');
+          window.dispatchEvent(event);
+      }
+  };
+
   return (
-    <div className="h-[calc(100vh-8rem)] flex flex-col lg:flex-row gap-8">
+    <div className="h-[calc(100vh-8rem)] flex flex-col lg:flex-row gap-8 relative">
       <Toast message="Texto copiado para a área de transferência!" isVisible={showToast} onClose={() => setShowToast(false)} />
+
+      {/* LIMIT MODAL */}
+      <AnimatePresence>
+        {showLimitModal && (
+            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+                <motion.div 
+                    initial={{ scale: 0.9, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={{ scale: 0.9, opacity: 0 }}
+                    className="bg-[#0F0518] border border-primary/50 rounded-2xl p-8 max-w-md w-full shadow-[0_0_50px_rgba(168,85,247,0.3)] text-center relative overflow-hidden"
+                >
+                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-purple-600"></div>
+                    <div className="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center mx-auto mb-6">
+                        <Lock className="w-8 h-8 text-primary" />
+                    </div>
+                    <h2 className="text-2xl font-bold text-white mb-2">Limite Gratuito Atingido</h2>
+                    <p className="text-slate-400 mb-8">
+                        Você utilizou seus {MAX_FREE_CREDITS} créditos gratuitos de texto. Para continuar gerando copies virais e escalando suas vendas, faça o upgrade para o plano PRO.
+                    </p>
+                    <button 
+                        onClick={navigateToSubscription}
+                        className="w-full py-4 bg-gradient-to-r from-primary to-purple-600 text-white font-bold rounded-xl shadow-lg hover:shadow-primary/50 hover:scale-105 transition-all mb-4"
+                    >
+                        Desbloquear Acesso Ilimitado
+                    </button>
+                    <button 
+                        onClick={() => setShowLimitModal(false)}
+                        className="text-sm text-slate-500 hover:text-white"
+                    >
+                        Voltar (Apenas visualizar)
+                    </button>
+                </motion.div>
+            </div>
+        )}
+      </AnimatePresence>
 
       {/* Painel Esquerdo: Configuração */}
       <div className="w-full lg:w-1/3 flex flex-col gap-6 overflow-y-auto pr-2 custom-scrollbar">
@@ -96,6 +162,23 @@ const AdGenerator: React.FC = () => {
                 "Clique em Gerar para receber a copy otimizada."
             ]}
         />
+
+        {/* Free Credit Counter */}
+        <div className="bg-white/5 border border-white/10 rounded-xl p-4 flex items-center justify-between">
+            <span className="text-sm font-bold text-slate-300">Créditos Grátis</span>
+            <div className="flex items-center gap-2">
+                <div className="w-32 h-2 bg-black/50 rounded-full overflow-hidden">
+                    <motion.div 
+                        initial={{ width: 0 }}
+                        animate={{ width: `${(creditsUsed / MAX_FREE_CREDITS) * 100}%` }}
+                        className={`h-full ${creditsUsed >= MAX_FREE_CREDITS ? 'bg-red-500' : 'bg-primary'}`}
+                    />
+                </div>
+                <span className={`text-xs font-bold ${creditsUsed >= MAX_FREE_CREDITS ? 'text-red-500' : 'text-primary'}`}>
+                    {creditsUsed}/{MAX_FREE_CREDITS}
+                </span>
+            </div>
+        </div>
 
         {/* Channel Type Selector */}
         <div className="bg-[#0A0510] border border-white/5 p-1.5 rounded-xl flex gap-1">

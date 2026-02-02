@@ -52,8 +52,19 @@ const container = {
   show: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.1
+      staggerChildren: 0.15,
+      delayChildren: 0.2
     }
+  }
+};
+
+const itemVariant = {
+  hidden: { opacity: 0, y: 50, scale: 0.8 },
+  show: { 
+    opacity: 1, 
+    y: 0, 
+    scale: 1,
+    transition: { type: "spring", stiffness: 100, damping: 12 }
   }
 };
 
@@ -61,24 +72,28 @@ const Features: React.FC = () => {
   return (
     <section className="py-20 relative overflow-hidden">
       {/* Background Decor */}
-      <div className="absolute top-1/2 left-0 w-full h-[500px] bg-primary/5 blur-[120px] pointer-events-none -z-10 transform -translate-y-1/2"></div>
+      <motion.div 
+        animate={{ opacity: [0.3, 0.6, 0.3], scale: [1, 1.1, 1] }}
+        transition={{ duration: 6, repeat: Infinity }}
+        className="absolute top-1/2 left-0 w-full h-[500px] bg-primary/5 blur-[120px] pointer-events-none -z-10 transform -translate-y-1/2"
+      ></motion.div>
 
       {/* Section Headers */}
       <div className="text-center mb-16 px-4">
         <motion.h3 
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-3xl md:text-5xl font-extrabold text-white mb-4"
+          className="text-4xl md:text-6xl font-extrabold text-white mb-6"
         >
-          Por que escolher o <span className="text-primary">DropAI</span>?
+          Por que escolher o <span className="text-primary drop-shadow-[0_0_20px_rgba(168,85,247,0.5)]">DropAI</span>?
         </motion.h3>
         <motion.p 
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ delay: 0.2 }}
-          className="text-lg text-slate-400 max-w-2xl mx-auto"
+          className="text-xl text-slate-400 max-w-3xl mx-auto"
         >
           Nossa IA foi desenhada especificamente para substituir times inteiros de marketing.
         </motion.p>
@@ -89,46 +104,40 @@ const Features: React.FC = () => {
         variants={container}
         initial="hidden"
         whileInView="show"
-        viewport={{ once: true, margin: "-50px" }}
+        viewport={{ once: true, margin: "-100px" }}
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto px-4 perspective-1000"
       >
         {featuresData.map((feature, index) => (
           <motion.div 
             key={index} 
-            variants={{
-              hidden: { opacity: 0, y: 50 },
-              show: { opacity: 1, y: 0 }
-            }}
+            variants={itemVariant}
             whileHover={{ 
               scale: 1.05, 
-              rotateX: 5, 
+              rotateX: 10, 
               rotateY: 5,
               z: 50,
-              boxShadow: "0 20px 50px rgba(168, 85, 247, 0.3), 0 0 20px rgba(168, 85, 247, 0.1) inset"
+              boxShadow: "0 25px 50px -12px rgba(168, 85, 247, 0.25)"
             }}
-            transition={{ type: "spring", stiffness: 300, damping: 20 }}
-            style={{ transformStyle: "preserve-3d" }}
-            className="group relative bg-[#0A0510] border border-white/5 rounded-2xl p-8 overflow-hidden h-full transform-gpu transition-colors duration-300 hover:border-primary/50 hover:bg-[#0F0518]"
+            className="group relative bg-[#0A0510] border border-white/5 rounded-3xl p-10 overflow-hidden h-full transform-gpu transition-all duration-300 hover:border-primary/50 hover:bg-[#0F0518]"
           >
             {/* Background Glow on Hover */}
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/0 via-primary/0 to-primary/0 group-hover:from-primary/10 group-hover:to-purple-500/10 transition-all duration-500"></div>
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/0 via-primary/0 to-primary/0 group-hover:from-primary/10 group-hover:to-purple-500/5 transition-all duration-500"></div>
 
             {/* Icon - Pops out in 3D */}
             <motion.div 
-              className={`w-14 h-14 rounded-xl ${feature.bg} flex items-center justify-center mb-6 shadow-inner relative z-10`}
-              style={{ transform: "translateZ(30px)" }}
+              className={`w-16 h-16 rounded-2xl ${feature.bg} flex items-center justify-center mb-8 shadow-inner relative z-10 border border-white/5`}
               whileHover={{ rotate: [0, 10, -10, 0], scale: 1.1 }}
               transition={{ duration: 0.5 }}
             >
-              <feature.icon className={`w-7 h-7 ${feature.color} drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]`} />
+              <feature.icon className={`w-8 h-8 ${feature.color} drop-shadow-[0_0_15px_rgba(255,255,255,0.4)]`} />
             </motion.div>
             
             {/* Text Content */}
-            <div style={{ transform: "translateZ(20px)" }} className="relative z-10">
-                <h4 className="text-xl font-bold text-white mb-3 group-hover:text-primary transition-colors group-hover:drop-shadow-[0_0_8px_rgba(168,85,247,0.5)]">
+            <div className="relative z-10">
+                <h4 className="text-2xl font-bold text-white mb-4 group-hover:text-primary transition-colors group-hover:drop-shadow-[0_0_8px_rgba(168,85,247,0.5)]">
                 {feature.title}
                 </h4>
-                <p className="text-slate-400 leading-relaxed group-hover:text-slate-200 transition-colors">
+                <p className="text-slate-400 leading-relaxed text-base group-hover:text-slate-200 transition-colors">
                 {feature.desc}
                 </p>
             </div>

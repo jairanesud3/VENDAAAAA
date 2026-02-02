@@ -16,26 +16,32 @@ const Pricing: React.FC = () => {
       <div className="container mx-auto px-4">
         <div className="text-center mb-20">
           <motion.h2 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, y: 30, scale: 0.9 }}
+            whileInView={{ opacity: 1, y: 0, scale: 1 }}
             viewport={{ once: true }}
-            className="text-4xl md:text-5xl font-extrabold text-white mb-4"
+            className="text-5xl md:text-6xl font-extrabold text-white mb-6"
           >
             Investimento Inteligente
           </motion.h2>
-          <p className="text-slate-400 text-lg">
+          <motion.p 
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            className="text-slate-400 text-xl"
+          >
             Escolha a velocidade do seu crescimento.
-          </p>
+          </motion.p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto items-center perspective-1000">
           
           {/* Card 1: Iniciante */}
           <motion.div 
-            initial={{ opacity: 0, x: -20 }}
-            whileInView={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, x: -50, rotateY: 10 }}
+            whileInView={{ opacity: 1, x: 0, rotateY: 0 }}
             viewport={{ once: true }}
-            className="bg-surface border border-white/5 rounded-3xl p-8 relative hover:border-white/20 transition-all group"
+            transition={{ duration: 0.6 }}
+            className="bg-surface border border-white/5 rounded-3xl p-8 relative hover:border-white/20 transition-all group hover:-translate-y-2 hover:shadow-2xl"
           >
             <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white/10 backdrop-blur-md border border-white/10 px-4 py-1 rounded-full text-[10px] font-bold text-slate-300 uppercase tracking-wider">
                 Melhor Custo-Benefício
@@ -67,14 +73,15 @@ const Pricing: React.FC = () => {
 
           {/* Card 2: Escala Pro (Aggressive Highlight) */}
           <motion.div 
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            whileHover={{ scale: 1.03 }}
+            initial={{ opacity: 0, scale: 0.8, y: 50 }}
+            whileInView={{ opacity: 1, scale: 1, y: 0 }}
+            whileHover={{ scale: 1.05 }}
             viewport={{ once: true }}
-            className="bg-[#0F0518] rounded-3xl p-8 relative transform md:scale-110 z-10 shadow-2xl shadow-primary/10 border border-primary/20"
+            transition={{ type: "spring", stiffness: 200, damping: 20 }}
+            className="bg-[#0F0518] rounded-3xl p-8 relative transform md:scale-110 z-10 shadow-[0_0_50px_rgba(168,85,247,0.15)] border border-primary/20"
           >
             {/* Animated Border Gradient */}
-            <div className="absolute inset-0 rounded-3xl p-[2px] bg-gradient-to-br from-primary via-purple-500 to-transparent opacity-50 pointer-events-none">
+            <div className="absolute inset-0 rounded-3xl p-[2px] bg-gradient-to-br from-primary via-purple-500 to-transparent opacity-50 pointer-events-none animate-pulse">
                  <div className="absolute inset-0 bg-[#0F0518] rounded-[22px]" />
             </div>
 
@@ -127,10 +134,11 @@ const Pricing: React.FC = () => {
 
           {/* Card 3: Enterprise */}
           <motion.div 
-             initial={{ opacity: 0, x: 20 }}
-            whileInView={{ opacity: 1, x: 0 }}
+             initial={{ opacity: 0, x: 50, rotateY: -10 }}
+            whileInView={{ opacity: 1, x: 0, rotateY: 0 }}
             viewport={{ once: true }}
-            className="bg-surface border border-white/5 rounded-3xl p-8 relative opacity-80 hover:opacity-100 transition-opacity"
+            transition={{ duration: 0.6 }}
+            className="bg-surface border border-white/5 rounded-3xl p-8 relative opacity-80 hover:opacity-100 transition-all hover:-translate-y-2 hover:shadow-2xl"
           >
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-xl font-bold text-white">ENTERPRISE</h3>
