@@ -1,1 +1,1 @@
-// DEPRECATED: Logic moved to app/page.tsx
+// FILE DELETED - MIGRATED TO NEXT.JS

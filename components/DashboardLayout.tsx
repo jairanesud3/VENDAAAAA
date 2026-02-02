@@ -3,12 +3,13 @@ import Sidebar from './Sidebar';
 import { Menu, Zap } from 'lucide-react';
 
 // Components
+// IMPORTANTE: Apontando para a pasta dashboard para evitar ambiguidade
 import DashboardHome from './dashboard/DashboardHome';
 import AdGenerator from './dashboard/AdGenerator';
 import StudioProduct from './dashboard/StudioProduct';
 import Library from './dashboard/Library';
 import Settings from './dashboard/Settings';
-import ThemeSelector from './ThemeSelector'; // IMPORT CORRIGIDO PARA ./ThemeSelector (Mesma pasta)
+import ThemeSelector from './ThemeSelector'; 
 
 // Tools
 import { EmailGenerator, SeoWriter, InfluencerFinder, PersonaGenerator, RoasCalculator } from './dashboard/Tools';

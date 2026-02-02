@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Megaphone, Camera, Zap, ArrowRight, TrendingUp, AlertCircle, Mail, UserCircle, Clock, Calendar } from 'lucide-react';
-import ThemeSelector from '../ThemeSelector'; // IMPORT CORRIGIDO PARA ../ThemeSelector
+// IMPORTANTE: Importando do diretório pai (components/)
+import ThemeSelector from '../ThemeSelector'; 
 import Link from 'next/link';
 import { manageSubscriptionAction } from '../../lib/ai-actions';
 import { motion } from 'framer-motion';
