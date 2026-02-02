@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { MessageSquare, X, Send, Bot, User, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { chatSupportAction } from '../lib/ai-actions';
+import { cleanAIResponse } from '../lib/utils';
 
 const FloatingWidgets: React.FC = () => {
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -31,7 +32,9 @@ const FloatingWidgets: React.FC = () => {
 
       try {
           const aiResponse = await chatSupportAction(userMsg);
-          setMessages(prev => [...prev, { from: 'bot', text: aiResponse }]);
+          // CLEANING RESPONSE TO REMOVE ** AND #
+          const cleanResponse = cleanAIResponse(aiResponse);
+          setMessages(prev => [...prev, { from: 'bot', text: cleanResponse }]);
       } catch (error) {
           setMessages(prev => [...prev, { from: 'bot', text: 'Minha conexão neural instabilizou. Tente novamente em alguns segundos.' }]);
       } finally {
@@ -80,7 +83,7 @@ const FloatingWidgets: React.FC = () => {
                                 </div>
                             )}
                             <div 
-                                className={`max-w-[85%] p-3.5 rounded-2xl text-sm leading-relaxed shadow-sm ${
+                                className={`max-w-[85%] p-3.5 rounded-2xl text-sm leading-relaxed shadow-sm whitespace-pre-wrap ${
                                     m.from === 'user' 
                                     ? 'bg-primary text-white rounded-br-none' 
                                     : 'bg-white/10 text-slate-200 rounded-bl-none border border-white/5'
