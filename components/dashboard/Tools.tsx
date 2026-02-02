@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Mail, Search, Users, Calculator, Sparkles, Copy, UserCircle, Target, BarChart, DollarSign } from 'lucide-react';
+import { Mail, Search, Users, Calculator, Sparkles, Copy, UserCircle, Target, BarChart, DollarSign, Loader2 } from 'lucide-react';
 import { generateAdCopyAction } from '../../lib/ai-actions';
 import ToolHeader from './ToolHeader';
 
@@ -33,8 +33,8 @@ const ToolLayout: React.FC<{
           disabled={loading}
           className="w-full py-4 bg-primary text-white font-bold rounded-xl shadow-lg shadow-primary/20 hover:scale-[1.02] transition-all disabled:opacity-50 mt-8 flex items-center justify-center gap-2 group"
         >
-          {loading ? <Sparkles className="w-5 h-5 animate-spin" /> : <Sparkles className="w-5 h-5 group-hover:text-yellow-200" />}
-          {loading ? 'Processando...' : 'Gerar Resultado'}
+          {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Sparkles className="w-5 h-5 group-hover:text-yellow-200" />}
+          {loading ? 'IA Pensando...' : 'Gerar Resultado'}
         </button>
       </div>
 
@@ -44,7 +44,7 @@ const ToolLayout: React.FC<{
           <div className="flex-1 p-8 overflow-y-auto relative custom-scrollbar">
             <button 
                 onClick={() => navigator.clipboard.writeText(result)}
-                className="absolute top-4 right-4 text-xs text-primary hover:text-white flex items-center gap-1 bg-black/50 px-3 py-1.5 rounded-full backdrop-blur-md border border-white/10 hover:border-primary/50 transition-all"
+                className="absolute top-4 right-4 text-xs text-primary hover:text-white flex items-center gap-1 bg-black/50 px-3 py-1.5 rounded-full backdrop-blur-md border border-white/10 hover:border-primary/50 transition-all z-10"
             >
               <Copy className="w-3 h-3" /> Copiar
             </button>
@@ -63,7 +63,7 @@ const ToolLayout: React.FC<{
   );
 };
 
-// --- 1. EMAIL GENERATOR (EXPANDED) ---
+// --- 1. EMAIL GENERATOR (REAL AI) ---
 export const EmailGenerator = () => {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<string | null>(null);
@@ -73,29 +73,14 @@ export const EmailGenerator = () => {
   const [tone, setTone] = useState('persuasive');
 
   const handleGen = async () => {
+    if(!product) return;
     setLoading(true);
     try {
-      // Simulate specialized email generation
-      await new Promise(r => setTimeout(r, 2000));
-      const res = `ASSUNTO: 🚨 Você esqueceu isso no carrinho! (Estoque Baixo)
-
-Olá!
-
-Notei que você quase finalizou seu pedido do ${product}, mas acabou deixando para depois.
-
-Olha, eu entendo. A vida é corrida.
-
-Mas preciso te avisar: como esse item é muito procurado por ${target || 'nossos clientes'}, nosso estoque está acabando mais rápido do que o previsto.
-
-Se você quer garantir o seu e transformar sua rotina, essa é a hora.
-
-[BOTÃO: RETOMAR MEU PEDIDO AGORA]
-
-P.S.: Separei um cupom especial de 5% OFF se você fechar nos próximos 20 minutos: VIP5.
-
-Atenciosamente,
-Equipe de Suporte.`;
+      const context = `EMAIL_MARKETING | Tipo: ${type} | Tom: ${tone} | Público: ${target}`;
+      const res = await generateAdCopyAction(product, "", context);
       setResult(res);
+    } catch(e) {
+      setResult("Erro ao gerar email.");
     } finally { setLoading(false); }
   };
 
@@ -111,7 +96,7 @@ Equipe de Suporte.`;
             "Defina o objetivo (Ex: Recuperação de Carrinho, Boas-vindas).",
             "Digite o nome do produto e desconto (opcional).",
             "Escolha o tom de voz da mensagem.",
-            "Copie o HTML ou Texto gerado para sua ferramenta de email."
+            "Copie o texto gerado pela IA."
         ]}
     >
       <div>
@@ -120,12 +105,12 @@ Equipe de Suporte.`;
       </div>
       <div>
         <label className="text-sm font-medium text-slate-300 block mb-2">Público Alvo</label>
-        <input value={target} onChange={e => setTarget(e.target.value)} className="w-full bg-surface border border-white/10 rounded-lg p-3 text-white focus:border-primary outline-none transition-colors" placeholder="Ex: Homens 30-45 anos com dores nas costas" />
+        <input value={target} onChange={e => setTarget(e.target.value)} className="w-full bg-surface border border-white/10 rounded-lg p-3 text-white focus:border-primary outline-none transition-colors" placeholder="Ex: Homens 30-45 anos" />
       </div>
       <div>
         <label className="text-sm font-medium text-slate-300 block mb-2">Tipo de Sequência</label>
         <select value={type} onChange={e => setType(e.target.value)} className="w-full bg-surface border border-white/10 rounded-lg p-3 text-white focus:border-primary outline-none">
-          <option value="abandoned_cart">Recuperação de Carrinho (3 Emails)</option>
+          <option value="abandoned_cart">Recuperação de Carrinho</option>
           <option value="boleto">Recuperação de Boleto</option>
           <option value="welcome">Boas-vindas (Onboarding)</option>
           <option value="launch">Lançamento / Promoção</option>
@@ -145,17 +130,22 @@ Equipe de Suporte.`;
   );
 };
 
-// --- 2. SEO WRITER ---
+// --- 2. SEO WRITER (REAL AI) ---
 export const SeoWriter = () => {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<string | null>(null);
   const [keyword, setKeyword] = useState('');
 
   const handleGen = async () => {
+    if(!keyword) return;
     setLoading(true);
-    await new Promise(r => setTimeout(r, 2000));
-    setResult(`<h1>Guia Completo: ${keyword}</h1>\n\n<p>Neste artigo, você vai descobrir tudo sobre <strong>${keyword}</strong> e como isso pode transformar seus resultados...</p>\n\n<h2>1. O que é ${keyword}?</h2>\n<p>Lorem ipsum dolor sit amet...</p>`);
-    setLoading(false);
+    try {
+        const context = "BLOG_POST_SEO_ARTICLE_FULL";
+        const res = await generateAdCopyAction(keyword, "", context);
+        setResult(res);
+    } finally {
+        setLoading(false);
+    }
   };
 
   return (
@@ -167,9 +157,8 @@ export const SeoWriter = () => {
         onGenerate={handleGen} 
         result={result}
         helpSteps={[
-            "Insira a Palavra-Chave principal que deseja ranquear.",
-            "Escolha o tom de voz do artigo.",
-            "A IA escreverá um artigo de 1000 palavras otimizado com tags H1, H2 e H3."
+            "Insira a Palavra-Chave principal.",
+            "A IA escreverá um artigo completo otimizado com tags H1, H2 e H3."
         ]}
     >
       <div>
@@ -180,7 +169,7 @@ export const SeoWriter = () => {
   );
 };
 
-// --- 3. INFLUENCER FINDER (EXPANDED) ---
+// --- 3. INFLUENCER FINDER (REAL AI) ---
 export const InfluencerFinder = () => {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<string | null>(null);
@@ -189,27 +178,15 @@ export const InfluencerFinder = () => {
   const [size, setSize] = useState('micro');
 
   const handleGen = async () => {
+    if(!niche) return;
     setLoading(true);
-    await new Promise(r => setTimeout(r, 2000));
-    const res = `SCRIPT DE ABORDAGEM (${platform.toUpperCase()}):
-
-"Oi [Nome]! Tudo bem?
-
-Acompanho seu conteúdo sobre ${niche} e adoro a forma autêntica como você se conecta com seus seguidores.
-
-Sou da [Nome da Loja] e temos um produto que tem TUDO a ver com sua audiência. Queria te enviar um presente exclusivo e discutir uma possível parceria paga.
-
-Topa dar uma olhada? Se sim, me passa seu mídia kit ou contato comercial?
-
-Parabéns pelo trabalho!"
-
----
-
-LISTA DE PERFIS SUGERIDOS (${size}):
-1. @influencer1 (Engajamento: 4.5%)
-2. @influencer2 (Engajamento: 3.2%)`;
-    setResult(res);
-    setLoading(false);
+    try {
+        const context = `INFLUENCER_OUTREACH_STRATEGY | Plataforma: ${platform} | Tamanho: ${size}`;
+        const res = await generateAdCopyAction(niche, "", context);
+        setResult(res);
+    } finally {
+        setLoading(false);
+    }
   };
 
   return (
@@ -238,17 +215,22 @@ LISTA DE PERFIS SUGERIDOS (${size}):
   );
 };
 
-// --- 4. PERSONA GENERATOR ---
+// --- 4. PERSONA GENERATOR (REAL AI) ---
 export const PersonaGenerator = () => {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<string | null>(null);
   const [niche, setNiche] = useState('');
 
   const handleGen = async () => {
+    if(!niche) return;
     setLoading(true);
-    await new Promise(r => setTimeout(r, 2000));
-    setResult(`👤 AVATAR DO CLIENTE IDEAL\n\nNome Fictício: Mariana Silva\nIdade: 28-34 anos\nProfissão: Profissional liberal / Home Office\n\nDores:\n- Não tem tempo para cozinhar\n- Sente dores nas costas por ficar sentada\n\nDesejos:\n- Praticidade no dia a dia\n- Produtos esteticamente bonitos para casa`);
-    setLoading(false);
+    try {
+        const context = "BUYER_PERSONA_GENERATION_PROFILE";
+        const res = await generateAdCopyAction(niche, "", context);
+        setResult(res);
+    } finally {
+        setLoading(false);
+    }
   };
 
   return (
@@ -261,7 +243,7 @@ export const PersonaGenerator = () => {
   );
 };
 
-// --- 5. ROAS CALCULATOR (COMPLETE) ---
+// --- 5. ROAS CALCULATOR (MATH ONLY) ---
 export const RoasCalculator = () => {
   const [data, setData] = useState({
     budget: '',
@@ -288,16 +270,16 @@ export const RoasCalculator = () => {
     const taxes = estimatedRevenue * taxRate;
     const gatewayFees = estimatedRevenue * gatewayRate;
     
-    // Estimate sales volume (Assume Avg Order Value = COGS * 2.5 markup approximation for simple calc)
+    // Estimate sales volume
     const estimatedAOV = (cogs + shipping) * 2.5 || 100; 
     const estimatedSalesCount = Math.floor(estimatedRevenue / estimatedAOV);
     
     const totalProductCost = estimatedSalesCount * (cogs + shipping);
     const totalCosts = budget + taxes + gatewayFees + totalProductCost;
     const netProfit = estimatedRevenue - totalCosts;
-    const margin = (netProfit / estimatedRevenue) * 100;
-    const breakEvenRoas = totalCosts / budget; // Rough approx
-    const maxCPA = budget / estimatedSalesCount;
+    const margin = estimatedRevenue > 0 ? (netProfit / estimatedRevenue) * 100 : 0;
+    const breakEvenRoas = budget > 0 ? totalCosts / budget : 0; 
+    const maxCPA = estimatedSalesCount > 0 ? budget / estimatedSalesCount : 0;
 
     setResult({
         revenue: estimatedRevenue,
@@ -384,18 +366,6 @@ export const RoasCalculator = () => {
                         <div className="flex justify-between p-3 bg-white/5 rounded-lg">
                             <span className="text-slate-400">ROAS Break-even</span>
                             <span className="text-white font-bold">{result.breakEvenRoas.toFixed(2)}</span>
-                        </div>
-                    </div>
-
-                    {/* Simple Bar Visualization */}
-                    <div className="mt-4 pt-4 border-t border-white/5">
-                        <div className="flex justify-between text-xs text-slate-500 mb-1">
-                            <span>Custo</span>
-                            <span>Lucro</span>
-                        </div>
-                        <div className="h-2 w-full bg-white/10 rounded-full overflow-hidden flex">
-                            <div className="h-full bg-red-500" style={{ width: `${100 - result.margin}%` }}></div>
-                            <div className="h-full bg-green-500" style={{ width: `${result.margin}%` }}></div>
                         </div>
                     </div>
                 </div>

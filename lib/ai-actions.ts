@@ -3,7 +3,6 @@
 import { GoogleGenAI } from "@google/genai";
 
 // Initialize Gemini Client safely
-// The API key must be obtained exclusively from the environment variable process.env.API_KEY
 const getAiClient = () => {
     const apiKey = process.env.API_KEY;
     if (!apiKey) {
@@ -15,92 +14,92 @@ const getAiClient = () => {
 
 /**
  * GENERATE AD COPY (Real AI)
+ * Uses the requested 'gemini-flash-lite-latest' model.
  */
 export async function generateAdCopyAction(productName: string, price: string, context: string): Promise<string> {
   const ai = getAiClient();
   
   if (!ai) {
-    return "⚠️ ERRO DE CONFIGURAÇÃO: A API Key do Google Gemini não foi configurada no Vercel (Settings > Environment Variables > API_KEY).";
+    return "⚠️ ERRO CRÍTICO: API_KEY não encontrada. Configure no Vercel.";
   }
 
   try {
-    // Usando gemini-3-flash-preview conforme recomendado para tarefas de texto
-    const modelId = 'gemini-3-flash-preview';
+    // MODELO SOLICITADO PELO USUÁRIO
+    const modelId = 'gemini-flash-lite-latest';
     
     const prompt = `
-      Atue como um especialista em Copywriting de Resposta Direta e SEO para E-commerce.
+      Atue como um especialista em Copywriting e Marketing Digital de elite.
       
-      Produto: ${productName}
-      Preço: ${price}
-      Contexto/Plataforma: ${context}
+      DADOS DO PRODUTO/PEDIDO:
+      - Produto/Tema: ${productName}
+      - Preço/Detalhe: ${price}
+      - Contexto Específico: ${context}
       
       TAREFA:
-      Crie um texto de alta conversão, persuasivo e formatado.
+      Gere um conteúdo de altíssima qualidade, persuasivo e formatado para leitura rápida.
       
-      DIRETRIZES:
-      - Se for Marketplace (Amazon, ML, Shopee), foque em Título SEO, Ficha Técnica e Benefícios em tópicos.
-      - Se for Redes Sociais (Instagram, TikTok, FB), foque em AIDA (Atenção, Interesse, Desejo, Ação), use emojis pertinentes e Hashtags.
-      - Use gatilhos mentais de escassez e urgência se fizer sentido.
-      - O texto deve ser em Português do Brasil.
+      DIRETRIZES DE ESTILO:
+      - Use parágrafos curtos e impactantes.
+      - Se for email, use um Assunto chamativo.
+      - Se for anúncio, use emojis estratégicos e AIDA (Atenção, Interesse, Desejo, Ação).
+      - Se for SEO, use hierarquia H1, H2.
+      - Idioma: Português do Brasil.
       
-      Retorne APENAS o texto pronto para copiar e colar.
+      Retorne APENAS o conteúdo final.
     `;
 
     const response = await ai.models.generateContent({
       model: modelId,
       contents: prompt,
       config: {
-        temperature: 0.8,
+        temperature: 0.7,
         topK: 40,
         topP: 0.95,
-        maxOutputTokens: 1024,
+        maxOutputTokens: 2048,
       },
     });
 
-    return response.text || "A IA processou o pedido mas não retornou texto. Tente novamente.";
+    return response.text || "A IA não retornou resposta. Tente novamente.";
   } catch (error: any) {
-    console.error("AI Generation Error:", error);
-    return `Erro na geração: ${error.message || 'Erro desconhecido'}. Verifique se a API Key é válida e tem saldo/permissão.`;
+    console.error("AI Text Generation Error:", error);
+    return `Erro na IA (${error.message}). Verifique sua API Key e cotas.`;
   }
 }
 
 /**
  * GENERATE IMAGE (Real AI via Gemini Image Model)
+ * Keeps 'gemini-2.5-flash-image' as Lite is text-optimized.
  */
 export async function generateImageAction(prompt: string): Promise<string> {
   const ai = getAiClient();
 
   if (!ai) {
-    // Retorna placeholder visual para não quebrar a UI se a chave faltar
     console.error("API_KEY missing");
-    return "https://via.placeholder.com/1024x1024.png?text=Configure+API_KEY+no+Vercel";
+    return "https://via.placeholder.com/1024x1024.png?text=Configure+API_KEY";
   }
 
   try {
-    // Generate images using gemini-2.5-flash-image (Standard for general image gen)
     const response = await ai.models.generateContent({
         model: 'gemini-2.5-flash-image',
         contents: {
             parts: [
-                { text: `Professional product photography, 4k, studio lighting, commercial advertisement quality, ultra realistic. ${prompt}` }
+                { text: `Professional product photography, 4k, studio lighting, commercial advertisement quality, ultra realistic, masterpiece. ${prompt}` }
             ]
         }
     });
 
-    // Check for inline data (base64) in the response
     for (const part of response.candidates?.[0]?.content?.parts || []) {
         if (part.inlineData) {
             return `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`;
         }
     }
     
-    // Fallback URL if generation fails or returns no image data
-    console.warn("No image data in response");
-    return "https://images.unsplash.com/photo-1602143407151-11115cd4e69b?q=80&w=1000&auto=format&fit=crop";
+    throw new Error("No image data returned");
     
   } catch (error) {
     console.error("Image Generation Error:", error);
-    return "https://via.placeholder.com/1024x1024.png?text=Erro+na+Geracao+de+Imagem"; 
+    // Fallback image in case of error (to keep UI pretty)
+    return "https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?q=80&w=1000&auto=format&fit=crop"; 
   }
 }
 

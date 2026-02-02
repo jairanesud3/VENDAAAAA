@@ -1,19 +1,32 @@
 import React, { useState, useEffect } from 'react';
 import { Megaphone, Camera, Zap, TrendingUp, Clock, Calendar, Mail, UserCircle } from 'lucide-react';
-import ThemeSelector from '../ThemeSelector'; // Imports from parent components folder
-import { motion } from 'framer-motion';
+import ThemeSelector from '../ThemeSelector'; 
+import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../../lib/supabase';
+import DashboardTour from './DashboardTour';
 
 interface DashboardHomeProps {
   onNavigate: (tab: string) => void;
   userData?: any;
 }
 
+const FREE_TIER_LIMIT = 15; // Total credits for free tier
+
 const DashboardHome: React.FC<DashboardHomeProps> = ({ onNavigate, userData }) => {
   const [user, setUser] = useState<any>(userData || null);
-  const [loading, setLoading] = useState(!userData);
   const [greeting, setGreeting] = useState('');
   const [currentDate, setCurrentDate] = useState('');
+  
+  // Real Usage Stats
+  const [stats, setStats] = useState({
+      creditsUsed: 0,
+      adsGenerated: 0,
+      imagesGenerated: 0,
+      timeSaved: 0,
+      roi: 0
+  });
+
+  const [showTour, setShowTour] = useState(false);
 
   useEffect(() => {
     // Time greeting logic
@@ -26,26 +39,63 @@ const DashboardHome: React.FC<DashboardHomeProps> = ({ onNavigate, userData }) =
     const dateOptions: Intl.DateTimeFormatOptions = { weekday: 'long', day: 'numeric', month: 'long' };
     setCurrentDate(new Date().toLocaleDateString('pt-BR', dateOptions));
 
-    // Fetch user if not provided prop
+    // 1. Fetch User Data
     if (userData) {
         setUser(userData);
-        setLoading(false);
+        if (userData.user_metadata?.show_tour) {
+            setShowTour(true);
+        }
     } else {
         const fetchUser = async () => {
             const { data } = await supabase.auth.getUser();
             if (data.user) {
                 setUser(data.user);
+                // Check if we should show tour based on metadata or if it's a fresh account
+                if (data.user.user_metadata?.show_tour) {
+                    setShowTour(true);
+                }
             }
-            setLoading(false);
         };
         fetchUser();
     }
+
+    // 2. Load Real Usage Stats from LocalStorage (Syncs with Tools)
+    const textCredits = parseInt(localStorage.getItem('drophacker_text_credits') || '0');
+    const imageCredits = parseInt(localStorage.getItem('drophacker_image_credits') || '0');
+    
+    const totalUsed = textCredits + imageCredits;
+    const estimatedTime = (textCredits * 15) + (imageCredits * 30); // Minutes saved
+    const estimatedRoi = (textCredits * 120) + (imageCredits * 80); // R$ estimated
+
+    setStats({
+        creditsUsed: totalUsed,
+        adsGenerated: textCredits,
+        imagesGenerated: imageCredits,
+        timeSaved: Math.round(estimatedTime / 60), // Hours
+        roi: estimatedRoi
+    });
+
   }, [userData]);
 
+  const handleTourComplete = async () => {
+      setShowTour(false);
+      // Update metadata so tour doesn't show again
+      await supabase.auth.updateUser({
+          data: { show_tour: false }
+      });
+  };
+
   const firstName = user?.user_metadata?.full_name?.split(' ')[0] || "Hacker";
+  const creditsRemaining = Math.max(0, FREE_TIER_LIMIT - stats.creditsUsed);
 
   return (
-    <div className="max-w-7xl mx-auto space-y-8 pb-12">
+    <div className="max-w-7xl mx-auto space-y-8 pb-12 relative">
+      
+      {/* Onboarding Tour */}
+      <AnimatePresence>
+        {showTour && <DashboardTour onComplete={handleTourComplete} userName={firstName} />}
+      </AnimatePresence>
+
       <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-8">
         <div>
           <motion.div 
@@ -75,12 +125,43 @@ const DashboardHome: React.FC<DashboardHomeProps> = ({ onNavigate, userData }) =
         </div>
       </header>
 
-      {/* Grid Stats */}
+      {/* Grid Stats (REAL DATA) */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <StatCard title="Créditos Restantes" value={850} max={1000} suffix="" icon={Zap} color="text-primary" delay={0} />
-        <StatCard title="Anúncios Gerados" value={124} suffix="" icon={Megaphone} color="text-pink-500" delay={0.1} />
-        <StatCard title="Tempo Economizado" value={14} suffix="h 30m" icon={Clock} color="text-blue-500" delay={0.2} />
-        <StatCard title="ROI Estimado" value={15400} prefix="R$ " suffix="" icon={TrendingUp} color="text-green-400" isCurrency delay={0.3} />
+        <StatCard 
+            title="Créditos Grátis" 
+            value={creditsRemaining} 
+            max={FREE_TIER_LIMIT} 
+            suffix="" 
+            icon={Zap} 
+            color="text-primary" 
+            delay={0} 
+        />
+        <StatCard 
+            title="Anúncios Criados" 
+            value={stats.adsGenerated} 
+            suffix="" 
+            icon={Megaphone} 
+            color="text-pink-500" 
+            delay={0.1} 
+        />
+        <StatCard 
+            title="Tempo Economizado" 
+            value={stats.timeSaved} 
+            suffix="horas" 
+            icon={Clock} 
+            color="text-blue-500" 
+            delay={0.2} 
+        />
+        <StatCard 
+            title="ROI Estimado" 
+            value={stats.roi} 
+            prefix="R$ " 
+            suffix="" 
+            icon={TrendingUp} 
+            color="text-green-400" 
+            isCurrency 
+            delay={0.3} 
+        />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
