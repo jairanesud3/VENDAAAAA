@@ -3,15 +3,20 @@
 @tailwind utilities;
 
 :root {
-  /* Default Theme: Roxo Neon (Purple) */
+  /* Default Theme: Roxo Neon (Purple) - Defined explicitly for immediate load */
   --color-primary: 168 85 247;      /* #A855F7 */
   --color-primary-dark: 126 34 206; /* #7E22CE */
+  --background: 5 1 13;             /* #05010D */
+  --foreground: 255 255 255;
 }
 
 body {
-  background-color: #05010D;
+  background-color: #05010D; /* Force dark background immediately */
   color: white;
+  font-family: 'Plus Jakarta Sans', sans-serif; /* Force font */
   overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* Custom Scrollbar */
@@ -30,14 +35,14 @@ body {
   background: rgb(var(--color-primary)); 
 }
 
-/* Neon Text Stroke Effect */
-.neon-stroke {
-  -webkit-text-stroke: 2px #d946ef;
-  color: transparent;
-  text-shadow: 0 0 20px rgba(217, 70, 239, 0.5);
+/* Effects */
+.glass-card {
+  background: rgba(15, 5, 24, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-/* Living Background Effect */
 .living-bg {
   position: fixed;
   top: 0;
@@ -46,43 +51,35 @@ body {
   height: 100vh;
   z-index: -1;
   background: radial-gradient(circle at 50% 50%, #0f0518 0%, #05010d 100%);
-  overflow: hidden;
-  transition: background 0.5s ease;
+  pointer-events: none;
 }
 
 .orb-1 {
   position: absolute;
   width: 600px;
   height: 600px;
-  background: radial-gradient(circle, rgb(var(--color-primary) / 0.15) 0%, rgba(0,0,0,0) 70%);
+  background: radial-gradient(circle, rgba(168, 85, 247, 0.15) 0%, rgba(0,0,0,0) 70%);
   border-radius: 50%;
   top: -100px;
   left: 20%;
+  filter: blur(80px);
   animation: orbMove 15s infinite alternate ease-in-out;
-  pointer-events: none;
 }
 
 .orb-2 {
   position: absolute;
   width: 500px;
   height: 500px;
-  background: radial-gradient(circle, rgba(57,255,20,0.05) 0%, rgba(0,0,0,0) 70%);
+  background: radial-gradient(circle, rgba(57, 255, 20, 0.05) 0%, rgba(0,0,0,0) 70%);
   border-radius: 50%;
   bottom: 0;
   right: 10%;
+  filter: blur(80px);
   animation: orbMove 20s infinite alternate-reverse ease-in-out;
-  pointer-events: none;
 }
 
-.glass-card {
-  background: rgba(15, 5, 24, 0.6);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.text-gradient {
-  background: linear-gradient(to right, #ffffff, #e9d5ff, #94a3b8);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+@keyframes orbMove {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(50px, -50px) scale(1.1); }
+  100% { transform: translate(-50px, 50px) scale(1); }
 }
