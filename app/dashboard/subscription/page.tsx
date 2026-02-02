@@ -10,9 +10,9 @@ export default function SubscriptionPage() {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
-  const handleSubscribe = (priceId: string) => {
+  const handleSubscribe = (planType: 'basic' | 'pro') => {
     startTransition(async () => {
-      const { url } = await createCheckoutSession(priceId);
+      const { url } = await createCheckoutSession(planType);
       if (url) {
         window.location.href = url;
       }
@@ -71,7 +71,7 @@ export default function SubscriptionPage() {
           </ul>
 
           <button 
-            onClick={() => handleSubscribe('price_basic_test')}
+            onClick={() => handleSubscribe('basic')}
             disabled={isPending}
             className="w-full py-4 rounded-xl border border-white/20 text-white font-bold hover:bg-white hover:text-black transition-all flex items-center justify-center gap-2"
           >
@@ -118,7 +118,7 @@ export default function SubscriptionPage() {
           </ul>
 
           <button 
-            onClick={() => handleSubscribe('price_pro_test')}
+            onClick={() => handleSubscribe('pro')}
             disabled={isPending}
             className="w-full py-4 rounded-xl bg-gradient-to-r from-primary to-purple-600 text-white font-bold shadow-lg shadow-primary/30 hover:shadow-primary/50 hover:scale-[1.02] transition-all flex items-center justify-center gap-2"
           >
