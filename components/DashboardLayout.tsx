@@ -8,7 +8,7 @@ import AdGenerator from './dashboard/AdGenerator';
 import StudioProduct from './dashboard/StudioProduct';
 import Library from './dashboard/Library';
 import Settings from './dashboard/Settings';
-import ThemeSelector from '../ThemeSelector'; // Import corrigido para o componente unificado
+import ThemeSelector from './ThemeSelector'; // IMPORT CORRIGIDO PARA ./ThemeSelector (Mesma pasta)
 
 // Tools
 import { EmailGenerator, SeoWriter, InfluencerFinder, PersonaGenerator, RoasCalculator } from './dashboard/Tools';

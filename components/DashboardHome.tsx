@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Megaphone, Camera, Zap, ArrowRight, TrendingUp, AlertCircle, Mail, UserCircle } from 'lucide-react';
-import ThemeSelector from './ThemeSelector';
+import ThemeSelector from './ThemeSelector'; // IMPORT CORRIGIDO PARA O MESMO DIRETÓRIO
 import Link from 'next/link';
 import { manageSubscriptionAction } from '../lib/ai-actions';
 
