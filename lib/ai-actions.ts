@@ -4,91 +4,95 @@ import { GoogleGenAI } from "@google/genai";
 
 // Initialize Gemini Client
 // The API key must be obtained exclusively from the environment variable process.env.API_KEY
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-
-/**
- * SECURITY & SUBSCRIPTION CHECK
- * In a real app, you would check the user's role in Supabase here.
- */
-async function checkSubscription(userId: string) {
-    // For now, we allow generation to ensure the demo works "for real".
-    // In production, uncomment the logic to query Supabase/Stripe.
-    return true; 
-}
+// We wrap this in a lazy initialization or check to prevent build time errors if key is missing during build
+const getAiClient = () => {
+    const apiKey = process.env.API_KEY;
+    if (!apiKey) return null;
+    return new GoogleGenAI({ apiKey });
+};
 
 /**
  * GENERATE AD COPY (Real AI)
  */
 export async function generateAdCopyAction(productName: string, price: string, context: string): Promise<string> {
-  if (!process.env.API_KEY) {
-    return "Erro: API_KEY do Google não configurada no servidor.";
+  const ai = getAiClient();
+  
+  if (!ai) {
+    console.error("API_KEY missing on server");
+    return "Erro de Configuração: API Key não encontrada no servidor. Verifique as variáveis de ambiente.";
   }
 
   try {
-    const modelId = context.startsWith('MARKETPLACE') ? 'gemini-2.5-flash-latest' : 'gemini-2.5-flash-latest';
+    // Using gemini-2.5-flash-latest as recommended for speed and quality
+    const modelId = 'gemini-2.5-flash-latest';
     
     const prompt = `
       Atue como um especialista em Copywriting de Resposta Direta e SEO para E-commerce.
+      
       Produto: ${productName}
       Preço: ${price}
       Contexto/Plataforma: ${context}
       
-      Crie um texto de alta conversão, persuasivo e formatado. 
-      Se for Marketplace, foque em SEO, Ficha Técnica e Benefícios.
-      Se for Redes Sociais, foque em AIDA (Atenção, Interesse, Desejo, Ação), emojis e Hashtags.
+      TAREFA:
+      Crie um texto de alta conversão, persuasivo e formatado.
       
-      Retorne apenas o texto pronto para copiar e colar.
+      DIRETRIZES:
+      - Se for Marketplace (Amazon, ML, Shopee), foque em Título SEO, Ficha Técnica e Benefícios em tópicos.
+      - Se for Redes Sociais (Instagram, TikTok, FB), foque em AIDA (Atenção, Interesse, Desejo, Ação), use emojis pertinentes e Hashtags.
+      - Use gatilhos mentais de escassez e urgência se fizer sentido.
+      - O texto deve ser em Português do Brasil.
+      
+      Retorne APENAS o texto pronto para copiar e colar, sem introduções como "Aqui está sua copy:".
     `;
 
     const response = await ai.models.generateContent({
       model: modelId,
       contents: prompt,
       config: {
-        temperature: 0.7,
+        temperature: 0.8, // Slightly higher for creativity in ads
         topK: 40,
         topP: 0.95,
         maxOutputTokens: 1024,
       },
     });
 
-    return response.text || "Não foi possível gerar o texto. Tente novamente.";
-  } catch (error) {
+    return response.text || "A IA não retornou texto. Tente novamente.";
+  } catch (error: any) {
     console.error("AI Generation Error:", error);
-    return "Erro ao conectar com a IA. Verifique os logs do servidor.";
+    return `Erro ao gerar copy: ${error.message || 'Erro desconhecido'}. Tente novamente em instantes.`;
   }
 }
 
 /**
  * GENERATE IMAGE (Real AI via Gemini Image Model)
- * Note: Replaces Leonardo.AI to keep it within the same API Key infrastructure for simplicity and robustness.
  */
 export async function generateImageAction(prompt: string): Promise<string> {
-  if (!process.env.API_KEY) {
+  const ai = getAiClient();
+
+  if (!ai) {
     throw new Error("API_KEY não configurada.");
   }
 
   try {
-    // Using Gemini for image generation as requested by system rules for best compatibility
+    // Generate images using gemini-2.5-flash-image
     const response = await ai.models.generateContent({
         model: 'gemini-2.5-flash-image',
         contents: {
             parts: [
-                { text: `Professional product photography, 4k, studio lighting, commercial advertisement quality. ${prompt}` }
+                { text: `Professional product photography, 4k, studio lighting, commercial advertisement quality, ultra realistic. ${prompt}` }
             ]
         }
     });
 
-    // The Gemini 2.5 Flash Image model might return text if it refuses, but standard Imagen models return images.
-    // If using a model that returns base64 inline data:
+    // Check for inline data (base64) in the response
     for (const part of response.candidates?.[0]?.content?.parts || []) {
         if (part.inlineData) {
             return `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`;
         }
     }
     
-    // Fallback if the specific model configuration behaves differently in the current env
-    // or if we switch to 'imagen-3.0-generate-001' style via generateImages
-    return "https://images.unsplash.com/photo-1602143407151-11115cd4e69b?q=80&w=1000&auto=format&fit=crop"; // Fallback visual
+    // Fallback URL if generation fails or returns no image data
+    return "https://images.unsplash.com/photo-1602143407151-11115cd4e69b?q=80&w=1000&auto=format&fit=crop";
     
   } catch (error) {
     console.error("Image Generation Error:", error);
@@ -98,10 +102,8 @@ export async function generateImageAction(prompt: string): Promise<string> {
 }
 
 /**
- * STRIPE SUBSCRIPTION MANAGER
+ * STRIPE SUBSCRIPTION MANAGER (Placeholder for flow)
  */
 export async function manageSubscriptionAction(userId: string) {
-    // This would typically generate a Stripe Billing Portal Link
-    // using stripe.billingPortal.sessions.create
     return process.env.NEXT_PUBLIC_BASE_URL + "/dashboard/subscription";
 }

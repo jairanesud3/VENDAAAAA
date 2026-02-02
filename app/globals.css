@@ -11,8 +11,8 @@
 }
 
 body {
-  /* Deep Radial Gradient Background matching the image */
-  background: radial-gradient(circle at 50% 0%, #1a0b2e 0%, #05010D 60%, #020005 100%);
+  /* Deep Radial Gradient Background matching the V2.5 design */
+  background: radial-gradient(circle at 50% -20%, #2e1065 0%, #05010D 50%, #020005 100%);
   background-attachment: fixed;
   color: white;
   font-family: 'Plus Jakarta Sans', sans-serif;
@@ -48,5 +48,11 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-/* Removed floating orbs to match the cleaner static look of the image, 
-   using body radial gradient instead for the "void" effect */
+.animate-electric-pulse {
+  animation: electricPulse 2s infinite linear;
+}
+
+@keyframes electricPulse {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
+}
