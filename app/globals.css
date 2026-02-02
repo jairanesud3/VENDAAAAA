@@ -11,7 +11,9 @@
 }
 
 body {
-  background-color: #05010D;
+  /* Deep Radial Gradient Background matching the image */
+  background: radial-gradient(circle at 50% 0%, #1a0b2e 0%, #05010D 60%, #020005 100%);
+  background-attachment: fixed;
   color: white;
   font-family: 'Plus Jakarta Sans', sans-serif;
   overflow-x: hidden;
@@ -46,52 +48,5 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.living-bg {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: -1;
-  background: radial-gradient(circle at 50% 50%, #0f0518 0%, #05010d 100%);
-  pointer-events: none;
-}
-
-.orb-1 {
-  position: absolute;
-  width: 600px;
-  height: 600px;
-  background: radial-gradient(circle, rgba(168, 85, 247, 0.15) 0%, rgba(0,0,0,0) 70%);
-  border-radius: 50%;
-  top: -100px;
-  left: 20%;
-  filter: blur(80px);
-  animation: orbMove 15s infinite alternate ease-in-out;
-}
-
-.orb-2 {
-  position: absolute;
-  width: 500px;
-  height: 500px;
-  background: radial-gradient(circle, rgba(57, 255, 20, 0.05) 0%, rgba(0,0,0,0) 70%);
-  border-radius: 50%;
-  bottom: 0;
-  right: 10%;
-  filter: blur(80px);
-  animation: orbMove 20s infinite alternate-reverse ease-in-out;
-}
-
-@keyframes orbMove {
-  0% { transform: translate(0, 0) scale(1); }
-  50% { transform: translate(50px, -50px) scale(1.1); }
-  100% { transform: translate(-50px, 50px) scale(1); }
-}
-
-@keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 20px rgba(168, 85, 247, 0.2); }
-  50% { box-shadow: 0 0 40px rgba(168, 85, 247, 0.6); }
-}
-
-.animate-pulse-glow {
-  animation: pulse-glow 3s infinite;
-}
+/* Removed floating orbs to match the cleaner static look of the image, 
+   using body radial gradient instead for the "void" effect */
