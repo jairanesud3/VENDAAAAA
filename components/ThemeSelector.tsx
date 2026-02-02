@@ -1,105 +1,25 @@
-import React, { useState, useEffect } from 'react';
-import { Palette, Check } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+"use client";
 
-const themes = [
-  { 
-    id: 'purple', 
-    name: 'Roxo Neon', 
-    color: '#A855F7', 
-    vars: { primary: '168 85 247', dark: '126 34 206' } 
-  },
-  { 
-    id: 'blue', 
-    name: 'Azul Cyber', 
-    color: '#3B82F6', 
-    vars: { primary: '59 130 246', dark: '37 99 235' } 
-  },
-  { 
-    id: 'green', 
-    name: 'Verde Matrix', 
-    color: '#22C55E', 
-    vars: { primary: '34 197 94', dark: '21 128 61' } 
-  },
-  { 
-    id: 'orange', 
-    name: 'Laranja Sunset', 
-    color: '#F97316', 
-    vars: { primary: '249 115 22', dark: '194 65 12' } 
-  }
-];
+import * as React from "react";
+import { Moon, Sun } from "lucide-react";
 
-const ThemeSelector: React.FC = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [currentTheme, setCurrentTheme] = useState('purple');
-
-  useEffect(() => {
-    const savedTheme = localStorage.getItem('drophacker_theme');
-    if (savedTheme) {
-      applyTheme(savedTheme);
-    }
-  }, []);
-
-  const applyTheme = (themeId: string) => {
-    const theme = themes.find(t => t.id === themeId);
-    if (theme) {
-      setCurrentTheme(themeId);
-      document.documentElement.style.setProperty('--color-primary', theme.vars.primary);
-      document.documentElement.style.setProperty('--color-primary-dark', theme.vars.dark);
-      localStorage.setItem('drophacker_theme', themeId);
-    }
-  };
+export default function ThemeSelector() {
+  const [theme, setTheme] = React.useState("dark");
 
   return (
-    <div className="relative z-50">
+    <div className="flex items-center gap-2 bg-white/5 p-1 rounded-lg border border-white/10">
       <button 
-        onClick={() => setIsOpen(!isOpen)}
-        className="p-2.5 bg-surface border border-white/10 rounded-xl hover:border-primary hover:text-primary text-slate-400 transition-all shadow-lg hover:shadow-neon-primary"
-        title="Personalizar Tema"
+        onClick={() => setTheme("dark")}
+        className={`p-1.5 rounded-md transition-all ${theme === 'dark' ? 'bg-purple-600 text-white' : 'text-slate-400 hover:text-white'}`}
       >
-        <Palette className="w-5 h-5" />
+        <Moon className="w-4 h-4" />
       </button>
-
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div 
-            initial={{ opacity: 0, y: -10, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -10, scale: 0.95 }}
-            className="absolute right-0 top-full mt-4 w-64 bg-[#0F0518] border border-white/10 rounded-2xl shadow-2xl p-4 overflow-hidden"
-          >
-            <div className="text-sm font-bold text-white mb-3 uppercase tracking-wider">Cor de Destaque</div>
-            <div className="grid grid-cols-1 gap-2">
-              {themes.map((theme) => (
-                <button
-                  key={theme.id}
-                  onClick={() => {
-                      applyTheme(theme.id);
-                      setIsOpen(false);
-                  }}
-                  className={`flex items-center gap-3 p-2 rounded-lg transition-colors border ${currentTheme === theme.id ? 'bg-white/5 border-white/20' : 'border-transparent hover:bg-white/5'}`}
-                >
-                  <div 
-                    className="w-8 h-8 rounded-full shadow-inner flex items-center justify-center"
-                    style={{ backgroundColor: theme.color }}
-                  >
-                    {currentTheme === theme.id && <Check className="w-4 h-4 text-white" />}
-                  </div>
-                  <span className={`text-sm font-medium ${currentTheme === theme.id ? 'text-white' : 'text-slate-400'}`}>
-                    {theme.name}
-                  </span>
-                </button>
-              ))}
-            </div>
-            
-            <div className="mt-4 pt-3 border-t border-white/5 text-[10px] text-slate-500 text-center">
-              Sua escolha será salva automaticamente.
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <button 
+        onClick={() => setTheme("light")}
+        className={`p-1.5 rounded-md transition-all ${theme === 'light' ? 'bg-purple-600 text-white' : 'text-slate-400 hover:text-white'}`}
+      >
+        <Sun className="w-4 h-4" />
+      </button>
     </div>
   );
-};
-
-export default ThemeSelector;
+}

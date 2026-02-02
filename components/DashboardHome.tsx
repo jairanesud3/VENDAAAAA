@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Megaphone, Camera, Zap, ArrowRight, TrendingUp, AlertCircle, Mail, UserCircle } from 'lucide-react';
-import ThemeSelector from '../ThemeSelector';
-import { manageSubscriptionAction } from '../../lib/ai-actions';
+import ThemeSelector from './ThemeSelector';
+import Link from 'next/link';
+import { manageSubscriptionAction } from '../lib/ai-actions';
 
 interface DashboardHomeProps {
   onNavigate: (tab: string) => void;
