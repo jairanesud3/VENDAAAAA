@@ -2,12 +2,14 @@
 
 import { GoogleGenAI } from "@google/genai";
 
-// Initialize Gemini Client
+// Initialize Gemini Client safely
 // The API key must be obtained exclusively from the environment variable process.env.API_KEY
-// We wrap this in a lazy initialization or check to prevent build time errors if key is missing during build
 const getAiClient = () => {
     const apiKey = process.env.API_KEY;
-    if (!apiKey) return null;
+    if (!apiKey) {
+        console.warn("API_KEY is missing in environment variables.");
+        return null;
+    }
     return new GoogleGenAI({ apiKey });
 };
 
@@ -18,13 +20,12 @@ export async function generateAdCopyAction(productName: string, price: string, c
   const ai = getAiClient();
   
   if (!ai) {
-    console.error("API_KEY missing on server");
-    return "Erro de Configuração: API Key não encontrada no servidor. Verifique as variáveis de ambiente.";
+    return "⚠️ ERRO DE CONFIGURAÇÃO: A API Key do Google Gemini não foi configurada no Vercel (Settings > Environment Variables > API_KEY).";
   }
 
   try {
-    // Using gemini-2.5-flash-latest as recommended for speed and quality
-    const modelId = 'gemini-2.5-flash-latest';
+    // Usando gemini-3-flash-preview conforme recomendado para tarefas de texto
+    const modelId = 'gemini-3-flash-preview';
     
     const prompt = `
       Atue como um especialista em Copywriting de Resposta Direta e SEO para E-commerce.
@@ -42,24 +43,24 @@ export async function generateAdCopyAction(productName: string, price: string, c
       - Use gatilhos mentais de escassez e urgência se fizer sentido.
       - O texto deve ser em Português do Brasil.
       
-      Retorne APENAS o texto pronto para copiar e colar, sem introduções como "Aqui está sua copy:".
+      Retorne APENAS o texto pronto para copiar e colar.
     `;
 
     const response = await ai.models.generateContent({
       model: modelId,
       contents: prompt,
       config: {
-        temperature: 0.8, // Slightly higher for creativity in ads
+        temperature: 0.8,
         topK: 40,
         topP: 0.95,
         maxOutputTokens: 1024,
       },
     });
 
-    return response.text || "A IA não retornou texto. Tente novamente.";
+    return response.text || "A IA processou o pedido mas não retornou texto. Tente novamente.";
   } catch (error: any) {
     console.error("AI Generation Error:", error);
-    return `Erro ao gerar copy: ${error.message || 'Erro desconhecido'}. Tente novamente em instantes.`;
+    return `Erro na geração: ${error.message || 'Erro desconhecido'}. Verifique se a API Key é válida e tem saldo/permissão.`;
   }
 }
 
@@ -70,11 +71,13 @@ export async function generateImageAction(prompt: string): Promise<string> {
   const ai = getAiClient();
 
   if (!ai) {
-    throw new Error("API_KEY não configurada.");
+    // Retorna placeholder visual para não quebrar a UI se a chave faltar
+    console.error("API_KEY missing");
+    return "https://via.placeholder.com/1024x1024.png?text=Configure+API_KEY+no+Vercel";
   }
 
   try {
-    // Generate images using gemini-2.5-flash-image
+    // Generate images using gemini-2.5-flash-image (Standard for general image gen)
     const response = await ai.models.generateContent({
         model: 'gemini-2.5-flash-image',
         contents: {
@@ -92,11 +95,11 @@ export async function generateImageAction(prompt: string): Promise<string> {
     }
     
     // Fallback URL if generation fails or returns no image data
+    console.warn("No image data in response");
     return "https://images.unsplash.com/photo-1602143407151-11115cd4e69b?q=80&w=1000&auto=format&fit=crop";
     
   } catch (error) {
     console.error("Image Generation Error:", error);
-    // Return a placeholder on error to not break the UI
     return "https://via.placeholder.com/1024x1024.png?text=Erro+na+Geracao+de+Imagem"; 
   }
 }
